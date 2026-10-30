@@ -99,3 +99,29 @@ export interface RecipientEntry {
   height: number | null;
   createdAt: string;
 }
+
+// ===== 보호 파일 (.hck) =====
+// 백엔드 HckOpenResponse 기준. 파일에는 이미지가 없고, 열 때마다 서버가 열람자 워터마크 사본을 준다.
+
+export type HckEvent = "ISSUE" | "OPEN" | "CLAIM";
+
+export interface HckLedgerLine {
+  seq: number;
+  event: HckEvent;          // ISSUE: 플랫폼 발급 / OPEN: 뷰어로 열어 열람자 사본 발급 / CLAIM: 사본 주인이 처음 열어 기기 연결
+  copyCode: string;
+  name: string;
+  recipientType: RecipientType | null;
+}
+
+export interface HckOpened {
+  hckBase64: string;        // 장부가 갱신된 새 .hck (다른 사람에게 전달할 때 이 파일을 보낸다)
+  docCode: string;
+  title: string;
+  copyCode: string;         // 열람자 사본. imageUrl 이미지에 이 사본의 워터마크가 들어 있다
+  name: string;
+  parentCopyCode: string | null;
+  parentName: string | null;
+  reopened: boolean;        // 같은 기기가 다시 열었거나 사본 주인이 연 경우 (새 사본 없음)
+  imageUrl: string;
+  ledger: HckLedgerLine[];
+}

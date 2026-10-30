@@ -3,6 +3,7 @@ import type { CopyIssued, UploadedFile } from "./api/types";
 import { CopyIssuedPage } from "./pages/CopyIssuedPage";
 import { CopyIssuePage } from "./pages/CopyIssuePage";
 import { DocumentRegisterPage, type RegisteredDoc } from "./pages/DocumentRegisterPage";
+import { HckViewerPage } from "./pages/HckViewerPage";
 import { LandingPage } from "./pages/LandingPage";
 import { PathPreviewPage } from "./pages/PathPreviewPage";
 import { ProgressPage } from "./pages/ProgressPage";
@@ -18,13 +19,17 @@ type Screen =
   // 배포본 발급
   | { name: "docRegister" }
   | { name: "copyIssue"; doc: RegisteredDoc }
-  | { name: "copyIssued"; doc: RegisteredDoc; copy: CopyIssued };
+  | { name: "copyIssued"; doc: RegisteredDoc; copy: CopyIssued }
+  // 보호 파일(.hck) 뷰어 — 받은 사람이 바로 열 수 있게 #viewer 주소로도 들어온다
+  | { name: "viewer" };
 
 // 개발 서버에서만: ?pathPreview=COPY-G407 로 실제 경로 API 결과를 모달로 띄워 5 · 7단계를 확인한다
 const pathPreviewCode = import.meta.env.DEV ? new URLSearchParams(window.location.search).get("pathPreview") : null;
 
 export default function App() {
-  const [screen, setScreen] = useState<Screen>({ name: "landing" });
+  const [screen, setScreen] = useState<Screen>(() =>
+    window.location.hash === "#viewer" ? { name: "viewer" } : { name: "landing" },
+  );
   const docUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -42,7 +47,7 @@ export default function App() {
 
   switch (screen.name) {
     case "landing":
-      return <LandingPage onStart={() => toUpload()} onIssue={toIssue} />;
+      return <LandingPage onStart={() => toUpload()} onIssue={toIssue} onOpenHck={() => setScreen({ name: "viewer" })} />;
     case "upload":
       return (
         <UploadPage
@@ -73,6 +78,15 @@ export default function App() {
           copy={screen.copy}
           onIssueAnother={() => setScreen({ name: "copyIssue", doc: screen.doc })}
           onAnalyze={() => toUpload()}
+        />
+      );
+    case "viewer":
+      return (
+        <HckViewerPage
+          onHome={() => {
+            if (window.location.hash) history.replaceState(null, "", window.location.pathname + window.location.search);
+            setScreen({ name: "landing" });
+          }}
         />
       );
   }

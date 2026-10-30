@@ -41,7 +41,11 @@ export function CopyIssuedPage({ doc, copy, onIssueAnother, onAnalyze }: CopyIss
         </span>
         <h1>사본을 발급했습니다.</h1>
       </div>
-      <p className="result-hero-desc">배포본을 내려받아 받는 사람에게 전달하세요. 유출되면 이 사본 ID로 배포 경로를 추적할 수 있습니다.</p>
+      <p className="result-hero-desc">
+        배포본을 내려받아 받는 사람에게 전달하세요. 유출되면 이 사본 ID로 배포 경로를 추적할 수 있습니다.
+        <br />
+        보호 파일(.hck)로 보내면 받은 사람이 카톡 · 이메일로 다시 넘겨도, 여는 사람마다 기록됩니다.
+      </p>
 
       <section className="card result-card" aria-label="발급한 사본">
         <div className="result-thumb">
@@ -68,6 +72,10 @@ export function CopyIssuedPage({ doc, copy, onIssueAnother, onAnalyze }: CopyIss
               <a className="btn btn-primary btn-sm" href={api.copyFileUrl(copy.copyCode, true)} download={`${copy.copyCode}.png`}>
                 <Icon name="download" size={16} />
                 배포본 다운로드
+              </a>
+              <a className="btn btn-outline btn-sm" href={api.copyHckUrl(copy.copyCode)} download={`${copy.copyCode}.hck`}>
+                <Icon name="lock" size={16} />
+                보호 파일(.hck)
               </a>
             </div>
           </div>

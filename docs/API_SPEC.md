@@ -70,6 +70,8 @@ POST /api/files ─▶ (2.1 파일 정보) ─▶ POST /api/analyses ─▶ GET 
 | `NO_DOCUMENT` · `NOT_FOUND` · `NOT_REGISTERED` · `ENGINE_ERROR` · `INTERNAL_ERROR` | 409 | 실패한 분석의 결과 조회 (4.3 실패 사유) | 실패 안내 |
 | `COPY_NOT_FOUND` | 404 | 없는 사본 ID | — |
 | `LINEAGE_CYCLE` · `LINEAGE_BROKEN` | 409 | 배포 기록 데이터 오류 (정상 데이터에선 발생 안 함) | "배포 경로를 불러올 수 없습니다" |
+| `HCK_INVALID` | 400 | .hck 보호 파일이 아니거나 형식이 다름 | "보호 파일을 다시 확인해주세요" |
+| `HCK_TAMPERED` | 400 | 보호 파일 장부가 변조됨 (줄 수정 · 중간 줄 삭제 · 가짜 줄) | `error` 그대로 표시 |
 | (없음) | 502 | 워터마크 엔진 연결 실패 등 | "잠시 후 다시 시도해주세요" |
 
 ---
@@ -427,6 +429,63 @@ export interface AnalysisResult {
 | `GET /api/copies/{copyCode}/file` (`?download=1` 이면 다운로드) | 배포본 PNG |
 | `GET /api/recipients` | 사본 대장 목록 `[{recipientId, copyCode, parentCopyCode, docCode, name, recipientType, width, height, createdAt}]` |
 | `POST /api/detections` (multipart: `photo`, `corners`?) | 예전 동기 검출 API (화면 흐름에서는 `/api/analyses` 사용) |
+
+## 부록 C. 보호 파일 (.hck) — 플랫폼 밖 전달 추적
+
+사본을 PNG 대신 `.hck` 로 보내면, 받은 사람이 카톡 · 이메일로 다시 넘겨도 **여는 사람마다** 기록됩니다.
+
+```
+유기현이 .hck 를 카톡으로 C 에게 전송
+ → C 는 웹 뷰어(#viewer)에서만 열 수 있음 (파일에는 이미지가 없고 서명된 장부만 있음)
+ → 여는 순간 서버가 장부 검증 → C 전용 워터마크 사본 발급(부모 = 유기현 사본) → 장부에 한 줄 추가
+ → C 가 화면을 찍어 유출해도 사진에서 C 의 사본이 검출 → 배포 경로: 원본 → 유기현 → C
+```
+
+### `GET /api/copies/{copyCode}/hck` — 보호 파일 내려받기
+
+`application/x-hck`, `Content-Disposition: attachment; filename="COPY-XXXX.hck"`.
+zip 안에 `manifest.json`(`format`, `version`, `docCode`, `title`)과 `ledger.json`(원본 → 이 사본까지의 등록된 배포 경로)이 들어 있습니다.
+
+### `POST /api/hck/open` — 보호 파일 열기 (multipart)
+
+| 필드 | 필수 | 설명 |
+|---|---|---|
+| `file` | O | `.hck` |
+| `name` | O | 열람자 이름 (워터마크 사본의 받는 사람) |
+| `recipientType` | | `EMPLOYEE` \| `PARTNER` (기본 `PARTNER`) |
+| `viewerId` | 권장 | 브라우저가 보관하는 기기 식별값. 같은 기기가 다시 열면 새 사본을 만들지 않음 |
+
+**200 OK**
+```json
+{
+  "hckBase64": "…",                 // 장부가 갱신된 새 .hck → 같은 파일에 덮어쓰거나 내려받기
+  "docCode": "DOC-A001", "title": "OLED 설계도",
+  "copyCode": "COPY-V052",          // 열람자 사본. 화면 이미지는 GET /api/copies/{copyCode}/file
+  "name": "협력사 C",
+  "parentCopyCode": "COPY-D749", "parentName": "유기현",   // 파일을 넘겨준 사람 (내 사본이면 null)
+  "reopened": false,                // 같은 기기 재열람 · 사본 주인이 처음 연 경우 true (새 사본 없음)
+  "imageUrl": "/api/copies/COPY-V052/file",
+  "ledger": [
+    { "seq": 0, "event": "ISSUE", "copyCode": "COPY-D749", "name": "유기현",   "recipientType": "EMPLOYEE" },
+    { "seq": 1, "event": "CLAIM", "copyCode": "COPY-D749", "name": "유기현",   "recipientType": "EMPLOYEE" },
+    { "seq": 2, "event": "OPEN",  "copyCode": "COPY-V052", "name": "협력사 C", "recipientType": "PARTNER" }
+  ]
+}
+```
+
+| event | 의미 |
+|---|---|
+| `ISSUE` | 플랫폼에서 발급된 사본 (내려받을 때의 배포 경로) |
+| `CLAIM` | 사본 주인이 처음 열어 기기를 연결 (이름이 사본 받는 사람과 같을 때, 새 사본 없음) |
+| `OPEN` | 다른 사람이 열어 열람자 사본을 발급 |
+
+- 장부 줄: `hash = SHA-256(앞 줄 hash + 본문)`, `sig = HMAC-SHA256(서버 키, hash)`. 서명 키는 `FILE_ENCRYPTION_KEY` 에서 파생 (서버를 옮겨도 같은 키를 써야 기존 .hck 가 열림)
+- 기기 식별값은 원래 값 대신 서버 키로 만든 짧은 값만 장부에 남깁니다
+
+### 한계
+- 뷰어로 열지 않고 넘어간 경로(파일만 전달하고 아무도 열지 않음)는 그 다음 열람자의 부모로 합쳐집니다
+- 장부의 **끝 줄만 잘라낸 파일**은 정상적인 분기(같은 파일을 여러 명에게 보냄)와 구별할 수 없어 막지 못합니다. 서버 사본 대장에는 잘라낸 사람의 사본도 남습니다
+- 열람자 신원은 입력값 (본인 인증 없음, PoC). 배포본 이미지(`/file`)는 사본 ID 만 알면 조회됩니다
 
 ## 부록 B. 서버 동작 메모
 

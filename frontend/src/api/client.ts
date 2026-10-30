@@ -5,6 +5,7 @@ import type {
   ApiError,
   CopyIssued,
   DocumentCreated,
+  HckOpened,
   PathNode,
   RecipientEntry,
   RecipientType,
@@ -135,5 +136,24 @@ export const api = {
   /** GET /api/copies/{copyCode}/file — 배포본 PNG. download 면 첨부파일로 내려받는다 */
   copyFileUrl(copyCode: string, download = false) {
     return `${BASE_URL}/api/copies/${encodeURIComponent(copyCode)}/file${download ? "?download=1" : ""}`;
+  },
+
+  /** GET /api/copies/{copyCode}/hck — 보호 파일(.hck) 내려받기 */
+  copyHckUrl(copyCode: string) {
+    return `${BASE_URL}/api/copies/${encodeURIComponent(copyCode)}/hck`;
+  },
+
+  /** POST /api/hck/open — 보호 파일 열기. 처음 여는 기기면 열람자 사본을 발급한다 (엔진 호출이라 수 초 걸림) */
+  openHck(
+    file: Blob,
+    viewer: { name: string; recipientType: RecipientType; viewerId: string },
+    signal?: AbortSignal,
+  ) {
+    const form = new FormData();
+    form.append("file", file, "protected.hck");
+    form.append("name", viewer.name);
+    form.append("recipientType", viewer.recipientType);
+    form.append("viewerId", viewer.viewerId);
+    return request<HckOpened>("/api/hck/open", { method: "POST", body: form, signal });
   },
 };
