@@ -1,5 +1,5 @@
-# Docker Desktop만 설치한 뒤 `docker compose up -d`로 MySQL + 백엔드를 함께 띄운다.
-# 워터마크 엔진(watermark/, :8000)과 트레이싱 서버(tracing/server, :8001)는 아직 컨테이너가 없으므로 호스트에서 따로 실행한다.
+# Docker Desktop만 설치한 뒤 `docker compose up -d --build` 한 줄로 MySQL + 워터마크 엔진 + 백엔드 + 프론트를 띄운다.
+# 브라우저: http://localhost:3000 (FRONTEND_PORT). 트레이싱 PoC(tracing/server, :8001)는 컨테이너에 넣지 않았다.
 name: watermark # 다른 프로젝트 컨테이너와 이름이 겹치지 않도록 프로젝트명 고정
 
 services:
@@ -31,6 +31,22 @@ services:
       timeout: 5s
       retries: 10
 
+  watermark:
+    build:
+      context: ./watermark
+      dockerfile: Dockerfile
+    container_name: watermark-engine
+    restart: unless-stopped
+    environment:
+      # 워터마크 비밀키. 사본 발급 · 검출에 같은 키를 써야 하므로 바꾸면 기존 사본이 검출되지 않는다
+      WM_KEY: ${WM_KEY:?WM_KEY 를 .env 에 설정하세요 (팀 공용 키, 기존 사본과 같은 키)}
+    # 포트는 열지 않는다: 브라우저는 엔진을 직접 부르지 않고 backend 만 내부망(watermark:8000)으로 접속
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
   backend:
     build:
       context: ./backend
@@ -40,14 +56,16 @@ services:
     depends_on:
       mysql:
         condition: service_healthy # MySQL이 healthy가 될 때까지 기동 대기
+      watermark:
+        condition: service_healthy # 엔진이 떠 있어야 dev 시드(사본 발급 · 데모 이미지)를 만든다
     environment:
       # 컨테이너 안에서는 localhost가 아니라 서비스명(mysql)으로 접속
       DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-jeongbobada}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
       DB_USERNAME: ${MYSQL_USER:-jeongbobada}
       DB_PASSWORD: ${MYSQL_PASSWORD:-jeongbobada}
       DDL_AUTO: ${DDL_AUTO:-update}
-      # 호스트에서 실행 중인 엔진(:8000)에 접속. 엔진도 컨테이너로 띄우면 서비스명으로 바꾼다.
-      ENGINE_URL: ${ENGINE_URL:-http://host.docker.internal:8000}
+      # 기본은 compose 의 엔진 컨테이너. 호스트에서 직접 띄운 엔진을 쓰려면 .env 에 ENGINE_URL=http://host.docker.internal:8000
+      ENGINE_URL: ${ENGINE_URL:-http://watermark:8000}
       # 업로드 파일 암호화 키 (base64 32바이트). 필수: .env 에 설정 (openssl rand -base64 32)
       FILE_ENCRYPTION_KEY: ${FILE_ENCRYPTION_KEY:?FILE_ENCRYPTION_KEY 를 .env 에 설정하세요 (openssl rand -base64 32)}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:5173}
@@ -63,6 +81,18 @@ services:
     volumes:
       # 원본·배포본·암호화된 업로드 파일
       - backend_data:/app/data
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: watermark-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      # nginx 가 정적 파일을 서빙하고 /api 를 backend 로 넘긴다 (같은 주소라 CORS 불필요)
+      - "${FRONTEND_PORT:-3000}:80"
 
 volumes:
   mysql_data:

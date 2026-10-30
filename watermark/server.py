@@ -126,4 +126,5 @@ def api_detect():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=int(os.environ.get("PORT", 8000)))
+    # 컨테이너에서는 HOST=0.0.0.0 (Dockerfile). 호스트에서 직접 실행할 때는 기본값대로 로컬에서만 받는다
+    app.run(host=os.environ.get("HOST", "127.0.0.1"), port=int(os.environ.get("PORT", 8000)), threaded=True)

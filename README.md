@@ -157,15 +157,32 @@ ReTrace는 **FFT 기반 이미지 워터마크 검출**과 **다단계 문서 �
 
 ## 13. 실행
 
-```bash
-cp .env.example .env                                            # FILE_ENCRYPTION_KEY 를 채운다 (아래)
-echo "FILE_ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env
-docker compose up -d --build                                    # MySQL + backend (로컬 3306 사용 중이면 MYSQL_PORT=3307)
+### 한 번에 실행 (Docker)
 
-python -m venv .venv
-.venv/bin/pip install -r watermark/requirements.txt -r tracing/server/requirements.txt
-cd watermark && WM_KEY=<비밀키> ../.venv/bin/python server.py   # :8000
-cd tracing/server && ../../.venv/bin/uvicorn main:app --port 8001
+```bash
+cp .env.example .env
+echo "FILE_ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env   # 업로드 암호화 키
+# .env 의 WM_KEY= 에 팀 공용 워터마크 키를 넣는다 (기존 사본과 같은 키여야 검출됨)
+docker compose up -d --build
+```
+
+- 브라우저: **http://localhost:3000** (로컬 3306 이 사용 중이면 `.env` 에 `MYSQL_PORT=3307`)
+- 구성: `mysql` · `watermark`(엔진, 포트 비공개) · `backend`(:8080) · `frontend`(nginx :3000, `/api` → backend)
+- 엔진이 healthy 가 된 뒤 backend 가 떠서 dev 시드(DOC-A001, 3 · 5 · 7단계 경로, 데모 이미지)를 만든다
+- 첫 빌드는 엔진 이미지(OpenCV) 때문에 몇 분 걸린다
+- 끄기 `docker compose down` (데이터 유지) / 데이터까지 지우기 `docker compose down -v`
+
+### 개발 모드 (코드 고치면서 실행)
+
+```bash
+docker compose up -d mysql watermark backend                      # 프론트만 빼고 띄움
+cd frontend && cp .env.example .env.local && npm install && npm run dev   # http://localhost:5173 (핫 리로드)
+```
+
+엔진을 호스트에서 직접 띄우려면 `.env` 에 `ENGINE_URL=http://host.docker.internal:8000` 을 넣고:
+```bash
+python -m venv .venv && .venv/bin/pip install -r watermark/requirements.txt
+cd watermark && WM_KEY=<팀 공용 키> ../.venv/bin/python server.py   # :8000
 ```
 
 ### 백엔드 환경변수
