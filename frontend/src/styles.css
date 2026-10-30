@@ -2941,6 +2941,48 @@ a.btn {
   color: var(--blue);
 }
 
+.forward-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 18px;
+  max-width: 960px;
+  margin: 0 auto 4px;
+  padding: 18px 22px;
+}
+
+.forward-card.is-action {
+  border: 1.5px solid var(--blue);
+  background: var(--blue-50);
+}
+
+.forward-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--green-50);
+  color: var(--green-600);
+}
+
+.forward-card.is-action .forward-icon {
+  background: var(--blue);
+  color: var(--white);
+}
+
+.forward-body {
+  flex: 1;
+  min-width: 220px;
+}
+
+.forward-body p {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
 .hck-link {
   margin-top: 8px;
 }
