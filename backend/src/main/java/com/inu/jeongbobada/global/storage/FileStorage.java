@@ -1,5 +1,6 @@
 package com.inu.jeongbobada.global.storage;
 
+import com.inu.jeongbobada.global.crypto.FileCipher;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;

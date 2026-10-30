@@ -1,12 +1,12 @@
 package com.inu.jeongbobada.global.seed;
 
-import com.inu.jeongbobada.domain.document.CopyIssueCommand;
-import com.inu.jeongbobada.domain.document.Document;
-import com.inu.jeongbobada.domain.document.DocumentRepository;
-import com.inu.jeongbobada.domain.document.DocumentService;
-import com.inu.jeongbobada.domain.file.FileService;
-import com.inu.jeongbobada.domain.recipient.RecipientRepository;
-import com.inu.jeongbobada.domain.recipient.RecipientType;
+import com.inu.jeongbobada.domain.copy.dto.CopyIssueCommand;
+import com.inu.jeongbobada.domain.copy.service.CopyIssueService;
+import com.inu.jeongbobada.domain.document.entity.Document;
+import com.inu.jeongbobada.domain.document.repository.DocumentRepository;
+import com.inu.jeongbobada.domain.file.service.FileService;
+import com.inu.jeongbobada.domain.recipient.entity.RecipientType;
+import com.inu.jeongbobada.domain.recipient.repository.RecipientRepository;
 import com.inu.jeongbobada.global.engine.EngineClient;
 import com.inu.jeongbobada.global.exception.ApiException;
 import com.inu.jeongbobada.global.storage.FileStorage;
@@ -58,7 +58,7 @@ public class DevSeedLoader implements ApplicationRunner {
     private final EngineClient engineClient;
     private final DocumentRepository documentRepository;
     private final RecipientRepository recipientRepository;
-    private final DocumentService documentService;
+    private final CopyIssueService copyIssueService;
     private final FileStorage fileStorage;
 
     @Override
@@ -90,7 +90,7 @@ public class DevSeedLoader implements ApplicationRunner {
             if (recipientRepository.existsByCopyCode(copy.copyCode())) {
                 continue;
             }
-            documentService.issueCopy(new CopyIssueCommand(
+            copyIssueService.issueCopy(new CopyIssueCommand(
                     DOC_CODE, copy.name(), copy.type(), copy.parentCopyCode(), copy.copyCode()));
             log.info("[시드] 사본 발급: {} ({})", copy.copyCode(), copy.name());
         }

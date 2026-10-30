@@ -1,10 +1,10 @@
 package com.inu.jeongbobada.support;
 
-import com.inu.jeongbobada.domain.document.Document;
-import com.inu.jeongbobada.domain.document.DocumentRepository;
-import com.inu.jeongbobada.domain.recipient.Recipient;
-import com.inu.jeongbobada.domain.recipient.RecipientRepository;
-import com.inu.jeongbobada.domain.recipient.RecipientType;
+import com.inu.jeongbobada.domain.document.entity.Document;
+import com.inu.jeongbobada.domain.document.repository.DocumentRepository;
+import com.inu.jeongbobada.domain.recipient.entity.Recipient;
+import com.inu.jeongbobada.domain.recipient.entity.RecipientType;
+import com.inu.jeongbobada.domain.recipient.repository.RecipientRepository;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
