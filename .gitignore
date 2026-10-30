@@ -46,7 +46,7 @@ backend/data/
 *.hck
 .hck_keys.json
 *.db
-storage/
+tracing/**/storage/
 node_modules/
 .venv/
 demo/live/
