@@ -38,3 +38,13 @@ out/
 
 ### Docker ###
 .env
+
+### Tracing (Python / Node) ###
+*.hck
+.hck_keys.json
+*.db
+storage/
+node_modules/
+.venv/
+demo/live/
+__pycache__/
