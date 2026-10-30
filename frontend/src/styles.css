@@ -343,6 +343,31 @@ b.is-green {
   justify-content: space-between;
 }
 
+.app-top-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--white);
+  color: var(--ink-2);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.back-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
 .breadcrumb ol {
   display: flex;
   flex-wrap: wrap;

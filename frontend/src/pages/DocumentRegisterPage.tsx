@@ -20,10 +20,11 @@ const FEATURES = [
 
 interface DocumentRegisterPageProps {
   onRegistered: (doc: RegisteredDoc) => void;
+  onBack: () => void;
 }
 
 /** 07 문서 등록 — 제목과 원본 이미지를 받아 POST /api/documents */
-export function DocumentRegisterPage({ onRegistered }: DocumentRegisterPageProps) {
+export function DocumentRegisterPage({ onRegistered, onBack }: DocumentRegisterPageProps) {
   const [title, setTitle] = useState("");
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
@@ -97,7 +98,7 @@ export function DocumentRegisterPage({ onRegistered }: DocumentRegisterPageProps
   }
 
   return (
-    <AppShell step={1} steps={ISSUE_STEPS} breadcrumb={["문서 관리", "새 문서 등록"]}>
+    <AppShell step={1} steps={ISSUE_STEPS} breadcrumb={["문서 관리", "새 문서 등록"]} onBack={onBack}>
       <input
         ref={inputRef}
         type="file"

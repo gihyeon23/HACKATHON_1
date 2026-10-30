@@ -58,7 +58,7 @@ export function ResultPage({ analysisId, onRestart }: ResultPageProps) {
 
   if (state.kind !== "ready") {
     return (
-      <AppShell step={3} breadcrumb={breadcrumb}>
+      <AppShell step={3} breadcrumb={breadcrumb} onBack={() => onRestart()}>
         {state.kind === "loading" ? (
           <p className="loading" role="status">
             <span className="spinner" aria-hidden="true" />
@@ -92,7 +92,7 @@ export function ResultPage({ analysisId, onRestart }: ResultPageProps) {
   const imageUrl = api.fileImageUrl(r.file.fileId);
 
   return (
-    <AppShell step={3} breadcrumb={breadcrumb}>
+    <AppShell step={3} breadcrumb={breadcrumb} onBack={() => onRestart()}>
       <div className="result-hero">
         <span className="result-hero-icon" aria-hidden="true">
           <Icon name="check" size={40} strokeWidth={3} />

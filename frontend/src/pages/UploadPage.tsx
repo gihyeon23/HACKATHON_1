@@ -19,13 +19,14 @@ interface UploadPageProps {
   onStarted: (analysisId: string, file: UploadedFile) => void;
   /** 배포본 발급 흐름으로 (보조 링크) */
   onIssue: () => void;
+  onBack: () => void;
 }
 
 /**
  * 02 파일 업로드 + 2.1 분석 시작(파일 확인).
  * 파일이 올라가면 같은 화면에서 파일 정보와 "분석 시작" · "다른 파일 선택" 버튼을 보여준다.
  */
-export function UploadPage({ notice, onStarted, onIssue }: UploadPageProps) {
+export function UploadPage({ notice, onStarted, onIssue, onBack }: UploadPageProps) {
   const [file, setFile] = useState<UploadedFile | null>(null);
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
@@ -122,7 +123,7 @@ export function UploadPage({ notice, onStarted, onIssue }: UploadPageProps) {
   }
 
   return (
-    <AppShell step={1} breadcrumb={["유출 조사", "새 조사 시작"]}>
+    <AppShell step={1} breadcrumb={["유출 조사", "새 조사 시작"]} onBack={onBack}>
       <input
         ref={inputRef}
         type="file"

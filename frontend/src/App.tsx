@@ -18,7 +18,8 @@ type Screen =
   | { name: "result"; analysisId: string }
   // 배포본 발급
   | { name: "docRegister" }
-  | { name: "copyIssue"; doc: RegisteredDoc }
+  // from: 발급 완료 화면에서 "사본 하나 더 발급"으로 왔으면 이전 버튼이 그 화면으로 돌아간다
+  | { name: "copyIssue"; doc: RegisteredDoc; from?: CopyIssued }
   | { name: "copyIssued"; doc: RegisteredDoc; copy: CopyIssued }
   // 보호 파일(.hck) 뷰어 — 받은 사람이 바로 열 수 있게 #viewer 주소로도 들어온다
   | { name: "viewer" };
@@ -44,6 +45,7 @@ export default function App() {
 
   const toUpload = (notice?: string) => setScreen({ name: "upload", notice });
   const toIssue = () => setScreen({ name: "docRegister" });
+  const toLanding = () => setScreen({ name: "landing" });
 
   switch (screen.name) {
     case "landing":
@@ -54,6 +56,7 @@ export default function App() {
           notice={screen.notice}
           onStarted={(analysisId, file) => setScreen({ name: "progress", analysisId, file })}
           onIssue={toIssue}
+          onBack={toLanding}
         />
       );
     case "progress":
@@ -68,16 +71,23 @@ export default function App() {
     case "result":
       return <ResultPage analysisId={screen.analysisId} onRestart={toUpload} />;
     case "docRegister":
-      return <DocumentRegisterPage onRegistered={(doc) => setScreen({ name: "copyIssue", doc })} />;
+      return <DocumentRegisterPage onRegistered={(doc) => setScreen({ name: "copyIssue", doc })} onBack={toLanding} />;
     case "copyIssue":
-      return <CopyIssuePage doc={screen.doc} onIssued={(copy) => setScreen({ name: "copyIssued", doc: screen.doc, copy })} />;
+      return (
+        <CopyIssuePage
+          doc={screen.doc}
+          onIssued={(copy) => setScreen({ name: "copyIssued", doc: screen.doc, copy })}
+          onBack={() => (screen.from ? setScreen({ name: "copyIssued", doc: screen.doc, copy: screen.from }) : toLanding())}
+        />
+      );
     case "copyIssued":
       return (
         <CopyIssuedPage
           doc={screen.doc}
           copy={screen.copy}
-          onIssueAnother={() => setScreen({ name: "copyIssue", doc: screen.doc })}
+          onIssueAnother={() => setScreen({ name: "copyIssue", doc: screen.doc, from: screen.copy })}
           onAnalyze={() => toUpload()}
+          onBack={toLanding}
         />
       );
     case "viewer":

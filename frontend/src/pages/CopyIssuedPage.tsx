@@ -11,10 +11,11 @@ interface CopyIssuedPageProps {
   copy: CopyIssued;
   onIssueAnother: () => void;
   onAnalyze: () => void;
+  onBack: () => void;
 }
 
 /** 09 발급 완료 · 사본 대장 — 배포본 다운로드와 이 문서의 사본 대장(GET /api/recipients) */
-export function CopyIssuedPage({ doc, copy, onIssueAnother, onAnalyze }: CopyIssuedPageProps) {
+export function CopyIssuedPage({ doc, copy, onIssueAnother, onAnalyze, onBack }: CopyIssuedPageProps) {
   const [ledger, setLedger] = useState<RecipientEntry[] | null>(null);
   const [ledgerError, setLedgerError] = useState<string | null>(null);
   const [thumbFailed, setThumbFailed] = useState(false);
@@ -34,7 +35,7 @@ export function CopyIssuedPage({ doc, copy, onIssueAnother, onAnalyze }: CopyIss
   const parentText = (code: string | null) => (code ? `${code}${nameOf(code) ? ` · ${nameOf(code)}` : ""}` : "없음 (원본에서 직접)");
 
   return (
-    <AppShell step={3} steps={ISSUE_STEPS} breadcrumb={["문서 관리", doc.title, "발급 완료"]}>
+    <AppShell step={3} steps={ISSUE_STEPS} breadcrumb={["문서 관리", doc.title, "발급 완료"]} onBack={onBack}>
       <div className="result-hero">
         <span className="result-hero-icon" aria-hidden="true">
           <Icon name="check" size={40} strokeWidth={3} />

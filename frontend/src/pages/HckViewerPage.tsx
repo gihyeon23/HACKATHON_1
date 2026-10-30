@@ -182,7 +182,7 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
 
   if (opened) {
     return (
-      <AppShell step={3} steps={VIEWER_STEPS} breadcrumb={["보호 파일", opened.title]}>
+      <AppShell step={3} steps={VIEWER_STEPS} breadcrumb={["보호 파일", opened.title]} onBack={reset}>
         <div className="page-head">
           <p className="eyebrow">PROTECTED DOCUMENT</p>
           <h1>{opened.title}</h1>
@@ -253,7 +253,7 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
   }
 
   return (
-    <AppShell step={file ? 2 : 1} steps={VIEWER_STEPS} breadcrumb={["보호 파일", "열기"]}>
+    <AppShell step={file ? 2 : 1} steps={VIEWER_STEPS} breadcrumb={["보호 파일", "열기"]} onBack={onHome}>
       <input
         ref={inputRef}
         type="file"
