@@ -158,6 +158,8 @@ TraceGuard는 **FFT 기반 이미지 워터마크 검출**과 **다단계 문서
 ## 13. 실행
 
 ```bash
+cp .env.example .env                                            # FILE_ENCRYPTION_KEY 를 채운다 (아래)
+echo "FILE_ENCRYPTION_KEY=$(openssl rand -base64 32)" >> .env
 docker compose up -d --build                                    # MySQL + backend (로컬 3306 사용 중이면 MYSQL_PORT=3307)
 
 python -m venv .venv
@@ -165,3 +167,21 @@ python -m venv .venv
 cd watermark && WM_KEY=<비밀키> ../.venv/bin/python server.py   # :8000
 cd tracing/server && ../../.venv/bin/uvicorn main:app --port 8001
 ```
+
+### 백엔드 환경변수
+
+| 변수 | 기본값 | 설명 |
+|---|---|---|
+| `FILE_ENCRYPTION_KEY` | (필수) | 업로드 파일 AES-256-GCM 키, base64 32바이트. 없으면 기동 실패. `openssl rand -base64 32` |
+| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173` | 프론트엔드 출처 (쉼표 구분) |
+| `STORAGE_DIR` | `./data` (컨테이너 `/app/data`) | 원본 · 배포본 · 암호화된 업로드 파일 저장 위치 |
+| `SPRING_PROFILES_ACTIVE` | compose: `dev` | `dev`면 기동 시 시드 생성: `DOC-A001` "OLED 설계도"에서 3 · 5 · 7단계 경로 + 데모 촬영 이미지. **엔진이 먼저 떠 있어야 하며**, 꺼져 있으면 경고 로그만 남기고 건너뛴다 (엔진 실행 후 백엔드 재시작) |
+| `SHOW_SQL` | `false` | SQL 로그 출력 |
+| `ENGINE_URL` · `DB_URL` · `DB_USERNAME` · `DB_PASSWORD` | | 엔진 · DB 접속 |
+
+로컬에서 바로 실행할 때 (`backend/`에서):
+```bash
+FILE_ENCRYPTION_KEY=$(openssl rand -base64 32) SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
+```
+키를 바꾸면 이전에 암호화한 업로드 파일은 읽을 수 없다 (업로드 파일은 최대 24시간만 보관). API는 [watermark/API.md](watermark/API.md)의 Backend 섹션 참고.
+
