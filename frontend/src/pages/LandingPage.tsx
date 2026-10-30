@@ -1,8 +1,5 @@
 import { Blueprint, Icon, ShieldLogo, type IconName } from "../components/Icon";
 
-// 제품소개 등은 버튼이 아닌 텍스트로만 둔다 (AGENTS.md 3장)
-const NAV = ["제품 소개", "주요 기능", "도입 효과", "보안 기술", "고객사례"];
-
 const HOW_IT_WORKS = [
   { no: "01", title: "배포본 발급", desc: ["원본을 등록하고 받는 사람마다", "고유한 워터마크 사본을 만듭니다."] },
   { no: "02", title: "유출 이미지 분석", desc: ["유출된 이미지를 업로드하면", "워터마크로 사본을 식별합니다."] },
@@ -28,15 +25,6 @@ export function LandingPage({ onStart, onIssue, onOpenHck }: LandingPageProps) {
               <ShieldLogo />
               TraceGuard
             </span>
-            <ul className="hero-menu">
-              {NAV.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-            <button type="button" className="hero-cta" onClick={onStart}>
-              무료로 시작하기
-              <Icon name="arrowRight" size={16} strokeWidth={2.2} />
-            </button>
           </header>
 
           <div className="hero-body">

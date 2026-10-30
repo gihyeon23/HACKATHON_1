@@ -536,28 +536,6 @@ b.is-green {
   --logo-inner: #2a5ee8;
 }
 
-.hero-menu {
-  display: flex;
-  gap: 30px;
-  font-size: 15px;
-  opacity: 0.92;
-}
-
-.hero-cta {
-  margin-left: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  height: 42px;
-  padding: 0 20px;
-  border: 0;
-  border-radius: 8px;
-  background: var(--white);
-  color: var(--blue);
-  font-size: 15px;
-  font-weight: 700;
-}
-
 .hero-body {
   display: grid;
   grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
@@ -2821,10 +2799,6 @@ a.btn {
 
   .hero-nav {
     padding-right: 0;
-  }
-
-  .hero-menu {
-    display: none;
   }
 
   .hero-body {
