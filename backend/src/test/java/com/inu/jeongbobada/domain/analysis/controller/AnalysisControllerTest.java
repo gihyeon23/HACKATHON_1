@@ -123,7 +123,10 @@ class AnalysisControllerTest {
                 .andExpect(jsonPath("$.steps[0].status").value("DONE"))
                 .andExpect(jsonPath("$.steps[1].name").value("워터마크 분석"))
                 .andExpect(jsonPath("$.steps[1].status").value("RUNNING"))
-                .andExpect(jsonPath("$.steps[2].status").value("PENDING")));
+                .andExpect(jsonPath("$.steps[2].status").value("PENDING"))
+                .andExpect(jsonPath("$.steps[0].elapsedMs").isNumber())
+                .andExpect(jsonPath("$.steps[1].elapsedMs").isNumber())
+                .andExpect(jsonPath("$.steps[2].elapsedMs").isEmpty()));
         JsonNode running = poll(analysisId);
         assertThat(running.get("progress").asInt()).isBetween(10, 89);
         assertThat(running.get("steps").get(1).get("progress").asInt()).isLessThan(100);
@@ -139,7 +142,9 @@ class AnalysisControllerTest {
                 .andExpect(jsonPath("$.steps[*].status").value(org.hamcrest.Matchers.everyItem(
                         org.hamcrest.Matchers.is("DONE"))))
                 .andExpect(jsonPath("$.steps[*].progress").value(org.hamcrest.Matchers.everyItem(
-                        org.hamcrest.Matchers.is(100))));
+                        org.hamcrest.Matchers.is(100))))
+                .andExpect(jsonPath("$.steps[*].elapsedMs").value(org.hamcrest.Matchers.everyItem(
+                        org.hamcrest.Matchers.greaterThanOrEqualTo(0))));
 
         int pathLength = jsonMapper.readTree(mockMvc.perform(get("/api/copies/COPY-B02/path"))
                 .andReturn().getResponse().getContentAsString()).size();

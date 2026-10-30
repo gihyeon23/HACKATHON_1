@@ -1,5 +1,7 @@
 package com.inu.jeongbobada.domain.copy.dto;
 
+import com.inu.jeongbobada.domain.recipient.entity.RecipientType;
+
 /**
  * 배포 경로의 한 항목.
  *
@@ -7,8 +9,9 @@ package com.inu.jeongbobada.domain.copy.dto;
  * @param name 원본이면 문서 제목, 사본이면 배포 대상 이름
  * @param type ORIGINAL | COPY
  * @param role 원본 문서 | 중간 사본 | 식별된 사본
+ * @param recipientType 사본의 배포 대상 유형 (EMPLOYEE | PARTNER). 원본이면 null
  */
-public record PathNode(String code, String name, String type, String role) {
+public record PathNode(String code, String name, String type, String role, RecipientType recipientType) {
 
     public static final String ORIGINAL = "ORIGINAL";
     public static final String COPY = "COPY";
