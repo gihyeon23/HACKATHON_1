@@ -47,8 +47,13 @@ public class DetectionService {
                 .collect(Collectors.toMap(Recipient::getRecipientId, Recipient::getName));
         attachNames(result, names);
 
-        detectionRepository.save(toDetection(result));
+        record(result);
         return result;
+    }
+
+    /** 엔진 응답을 검출 이력으로 남긴다. 분석(Analysis)도 이 이력을 함께 쓴다. */
+    public Detection record(JsonNode result) {
+        return detectionRepository.save(toDetection(result));
     }
 
     /** 엔진 응답의 ID 를 이름으로 바꾼다. 이름은 엔진에 보내지 않으므로 백엔드에서 붙인다. */

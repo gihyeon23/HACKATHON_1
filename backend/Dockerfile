@@ -21,7 +21,8 @@ FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
 # 보안: non-root 실행
-RUN groupadd -r spring && useradd -r -g spring spring
+RUN groupadd -r spring && useradd -r -g spring spring \
+    && mkdir -p /app/data && chown spring:spring /app/data
 USER spring:spring
 
 COPY --chown=spring:spring --from=builder /app/build/libs/*-SNAPSHOT.jar app.jar

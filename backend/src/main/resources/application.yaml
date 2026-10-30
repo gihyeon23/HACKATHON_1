@@ -15,17 +15,31 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    show-sql: true
+    # SQL 문만 출력 (바인딩 값은 남기지 않음). 파일 내용은 DB 에 저장하지 않는다
+    show-sql: ${SHOW_SQL:false}
 
   servlet:
     multipart:
-      max-file-size: 30MB
-      max-request-size: 30MB
+      # 업로드 파일 최대 50MB. 요청 전체는 멀티파트 경계·다른 필드 여유분을 둔다
+      max-file-size: 50MB
+      max-request-size: 55MB
 
 engine:
   url: ${ENGINE_URL:http://127.0.0.1:8000}
   connect-timeout: 5s
   read-timeout: 120s
+
+storage:
+  # documents/ (원본), copies/ (배포본), uploads/ (암호화된 업로드), demo/ (데모 촬영 이미지)
+  dir: ${STORAGE_DIR:./data}
+  # 업로드 파일 AES-256-GCM 키 (base64 32바이트). 없으면 기동 실패. 생성: openssl rand -base64 32
+  encryption-key: ${FILE_ENCRYPTION_KEY:}
+  upload-retention: 1h
+  unanalyzed-retention: 24h
+  cleanup-interval: 60s
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
 
 server:
   port: ${PORT:8080}

@@ -39,6 +39,9 @@ out/
 ### Docker ###
 .env
 
+### Backend 저장 파일 (원본·배포본·암호화 업로드) ###
+backend/data/
+
 ### Tracing (Python / Node) ###
 *.hck
 .hck_keys.json
