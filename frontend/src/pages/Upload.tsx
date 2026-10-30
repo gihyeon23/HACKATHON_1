@@ -17,7 +17,8 @@ function Features({ wide }: { wide: boolean }) {
   );
 }
 
-export default function Upload() {
+/** onStarted: 분석이 시작되면 analysisId 를 받아 분석 진행 화면으로 넘긴다 */
+export default function Upload({ onStarted }: { onStarted: (analysisId: string) => void }) {
   const [picked, setPicked] = useState<UploadedFile | null>(null);
   const [over, setOver] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -28,6 +29,15 @@ export default function Upload() {
     setBusy(true); setError("");
     try { await job(); } catch (e) { setError(message(e, "요청을 처리하지 못했습니다.")); } finally { setBusy(false); }
   };
+  const start = (f: UploadedFile) => run(async () => {
+    try {
+      onStarted((await api.startAnalysis(f.fileId)).analysisId);
+    } catch (e) {
+      // 보관 기간이 지나 서버에서 지워진 파일이면 처음부터 다시 올린다
+      if (e instanceof ApiError && e.code === "FILE_NOT_FOUND") setPicked(null);
+      throw e;
+    }
+  });
   const choose = (f: File) => {
     setError("");
     if (!/\.(png|jpe?g)$/i.test(f.name)) return setError("PNG, JPG, JPEG 파일만 지원합니다.");
@@ -79,6 +89,7 @@ export default function Upload() {
               </dl>
             </div>
           </div>
+          <button className="btn btn-primary btn-wide" disabled={busy} onClick={() => start(picked)}>{busy ? "분석을 시작하는 중입니다…" : "분석 시작"}</button>
           <button className="btn btn-outline btn-wide" disabled={busy} onClick={() => input.current?.click()}><Icon name="refresh" size={18} /> 다른 파일 선택</button>
         </section>
       )}
