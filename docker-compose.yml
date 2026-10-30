@@ -1,5 +1,5 @@
 # Docker Desktop만 설치한 뒤 `docker compose up -d`로 MySQL + 백엔드를 함께 띄운다.
-# 워터마크 엔진(Python)은 아직 컨테이너가 없으므로 호스트에서 따로 실행한다 (ENGINE_URL 참고).
+# 워터마크 엔진(watermark/, :8000)과 트레이싱 서버(tracing/server, :8001)는 아직 컨테이너가 없으므로 호스트에서 따로 실행한다.
 name: watermark # 다른 프로젝트 컨테이너와 이름이 겹치지 않도록 프로젝트명 고정
 
 services:
@@ -33,7 +33,7 @@ services:
 
   backend:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: watermark-backend
     restart: unless-stopped

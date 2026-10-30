@@ -129,3 +129,39 @@
 ## 11. 결론
 
 TraceGuard는 **FFT 기반 이미지 워터마크 검출**과 **다단계 문서 배포 계보 역추적**을 결합해, 유출 이미지에서 식별한 사본을 출발점으로 기록된 전달 관계를 조회하고 이해하기 쉽게 시각화한다. 모든 이동을 추적하거나 유출자를 확정하지는 않지만, 관리된 배포 과정의 증거를 연결해 유출 사고 초기 조사에 필요한 단서를 제공한다.
+
+---
+
+## 12. 레포 구조
+
+```
+.
+├── frontend/     프론트엔드 (예정) — backend /api 만 호출
+├── backend/      자바 웹 (Spring Boot, :8080) — 수신자 대장 · 검출 이력 · API
+├── tracing/      .hck 파일 유출 경로 역추적 (Python FastAPI :8001 + React :5173)
+├── watermark/    휴대폰 촬영본 워터마크 추출 엔진 (Python Flask, :8000)
+├── docker-compose.yml   MySQL + backend
+└── .env.example
+```
+
+```
+[frontend] ──/api──▶ [backend :8080] ──/v1──▶ [watermark :8000]
+                                        (예정)─▶ [tracing   :8001]
+```
+
+| 폴더 | 추적 대상 | 문서 |
+|---|---|---|
+| `backend/` | — | `./gradlew build` (backend/ 에서) |
+| `tracing/` | 파일 그대로 전달된 경로 (A→B→C→D) | [tracing/README.md](tracing/README.md) |
+| `watermark/` | 화면을 촬영해 이미지가 된 유출본의 유출자 | [watermark/API.md](watermark/API.md) |
+
+## 13. 실행
+
+```bash
+docker compose up -d --build                                    # MySQL + backend (로컬 3306 사용 중이면 MYSQL_PORT=3307)
+
+python -m venv .venv
+.venv/bin/pip install -r watermark/requirements.txt -r tracing/server/requirements.txt
+cd watermark && WM_KEY=<비밀키> ../.venv/bin/python server.py   # :8000
+cd tracing/server && ../../.venv/bin/uvicorn main:app --port 8001
+```
