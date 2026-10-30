@@ -1,0 +1,59 @@
+# Docker Desktop만 설치한 뒤 `docker compose up -d`로 MySQL + 백엔드를 함께 띄운다.
+# 워터마크 엔진(Python)은 아직 컨테이너가 없으므로 호스트에서 따로 실행한다 (ENGINE_URL 참고).
+name: watermark # 다른 프로젝트 컨테이너와 이름이 겹치지 않도록 프로젝트명 고정
+
+services:
+  mysql:
+    image: mysql:8.4 # 버전 고정
+    container_name: watermark-mysql
+    restart: unless-stopped
+    environment:
+      # ${VAR:-default}: .env가 없어도 오른쪽 기본값으로 동작
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-jeongbobada}
+      MYSQL_USER: ${MYSQL_USER:-jeongbobada}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-jeongbobada}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    command:
+      # 수신자 이름(한글) 저장용
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      # 호스트 포트. 로컬에 MySQL이 이미 3306으로 떠 있으면 .env에서 MYSQL_PORT=3307 등으로 바꾼다.
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      # named volume: `docker compose down`으로 컨테이너를 지워도 데이터는 남는다.
+      # 데이터까지 지우려면 `docker compose down -v`
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # 컨테이너가 "떠 있음"과 "쿼리를 받을 수 있음"은 다르므로 ping 성공 시에만 healthy
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: watermark-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy # MySQL이 healthy가 될 때까지 기동 대기
+    environment:
+      # 컨테이너 안에서는 localhost가 아니라 서비스명(mysql)으로 접속
+      DB_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-jeongbobada}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+      DB_USERNAME: ${MYSQL_USER:-jeongbobada}
+      DB_PASSWORD: ${MYSQL_PASSWORD:-jeongbobada}
+      DDL_AUTO: ${DDL_AUTO:-update}
+      # 호스트에서 실행 중인 엔진(:8000)에 접속. 엔진도 컨테이너로 띄우면 서비스명으로 바꾼다.
+      ENGINE_URL: ${ENGINE_URL:-http://host.docker.internal:8000}
+      TZ: Asia/Seoul
+    extra_hosts:
+      # Linux에서도 host.docker.internal이 호스트를 가리키도록 (Docker Desktop은 기본 제공)
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "${BACKEND_PORT:-8080}:8080"
+
+volumes:
+  mysql_data:
