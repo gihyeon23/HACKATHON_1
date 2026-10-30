@@ -114,6 +114,13 @@ const PATHS = {
       <path d="m20 20-4.2-4.2" />
     </>
   ),
+  plus: <path d="M12 5v14M5 12h14" />,
+  download: (
+    <>
+      <path d="M12 4v11M7 10.5 12 15.5l5-5" />
+      <path d="M5 20h14" />
+    </>
+  ),
   square: <rect x="5" y="5" width="14" height="14" rx="3" />,
   circle: <circle cx="12" cy="12" r="7" />,
 } as const;

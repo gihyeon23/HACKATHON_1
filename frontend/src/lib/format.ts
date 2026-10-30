@@ -1,4 +1,4 @@
-import type { AnalysisResult } from "../api/types";
+import type { AnalysisResult, RecipientType } from "../api/types";
 
 export const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 export const ACCEPTED_EXTENSIONS = ["png", "jpg", "jpeg"];
@@ -56,4 +56,16 @@ export function detectionLabel(level: AnalysisResult["detectionLevel"]): string 
 /** 검출 점수 7.92 (기준 5.0) */
 export function detectionScore(z: number, threshold: number): string {
   return `검출 점수 ${z.toFixed(2)} (기준 ${threshold.toFixed(1)})`;
+}
+
+const RECIPIENT_LABEL: Record<RecipientType, string> = { EMPLOYEE: "직원", PARTNER: "협력사" };
+
+export function recipientLabel(type: RecipientType): string {
+  return RECIPIENT_LABEL[type];
+}
+
+/** "document.png" → "PNG", "a.jpg" → "JPEG" (서버 표기와 맞춘다) */
+export function formatFromName(name: string): string {
+  const ext = name.split(".").pop()?.toLowerCase() ?? "";
+  return ext === "png" ? "PNG" : "JPEG";
 }

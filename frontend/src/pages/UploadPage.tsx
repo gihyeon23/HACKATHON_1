@@ -17,13 +17,15 @@ interface UploadPageProps {
   /** 다른 화면에서 돌아올 때 보여줄 안내 (예: 취소로 파일이 삭제됨) */
   notice?: string;
   onStarted: (analysisId: string, file: UploadedFile) => void;
+  /** 배포본 발급 흐름으로 (보조 링크) */
+  onIssue: () => void;
 }
 
 /**
  * 02 파일 업로드 + 2.1 분석 시작(파일 확인).
  * 파일이 올라가면 같은 화면에서 파일 정보와 "분석 시작" · "다른 파일 선택" 버튼을 보여준다.
  */
-export function UploadPage({ notice, onStarted }: UploadPageProps) {
+export function UploadPage({ notice, onStarted, onIssue }: UploadPageProps) {
   const [file, setFile] = useState<UploadedFile | null>(null);
   const [busy, setBusy] = useState<Busy>(null);
   const [error, setError] = useState<string | null>(null);
@@ -249,6 +251,10 @@ export function UploadPage({ notice, onStarted }: UploadPageProps) {
             <span>샘플 문서로 분석 결과를 바로 확인해보세요.</span>
           </span>
           <Icon name="chevronRight" size={20} />
+        </button>
+        <button type="button" className="issue-link" onClick={onIssue}>
+          아직 배포본이 없나요? <b>워터마크 사본 발급하기</b>
+          <Icon name="arrowRight" size={16} strokeWidth={2.2} />
         </button>
       </div>
 

@@ -3,7 +3,11 @@ import type {
   AnalysisResult,
   AnalysisStatus,
   ApiError,
+  CopyIssued,
+  DocumentCreated,
   PathNode,
+  RecipientEntry,
+  RecipientType,
   UploadedFile,
 } from "./types";
 
@@ -100,5 +104,36 @@ export const api = {
 
   getCopyPath(copyCode: string, signal?: AbortSignal) {
     return request<PathNode[]>(`/api/copies/${encodeURIComponent(copyCode)}/path`, { signal });
+  },
+
+  /** POST /api/documents — 원본 문서 등록 */
+  registerDocument(title: string, image: File, signal?: AbortSignal) {
+    const form = new FormData();
+    form.append("title", title);
+    form.append("image", image);
+    return request<DocumentCreated>("/api/documents", { method: "POST", body: form, signal });
+  },
+
+  /** POST /api/documents/{docCode}/copies — 받는 사람별 워터마크 사본 발급 (엔진 호출이라 수 초 걸림) */
+  issueCopy(
+    docCode: string,
+    copy: { name: string; recipientType: RecipientType; parentCopyCode: string | null },
+    signal?: AbortSignal,
+  ) {
+    const form = new FormData();
+    form.append("name", copy.name);
+    form.append("recipientType", copy.recipientType);
+    if (copy.parentCopyCode) form.append("parentCopyCode", copy.parentCopyCode);
+    return request<CopyIssued>(`/api/documents/${encodeURIComponent(docCode)}/copies`, { method: "POST", body: form, signal });
+  },
+
+  /** GET /api/recipients — 사본 대장 */
+  listRecipients(signal?: AbortSignal) {
+    return request<RecipientEntry[]>("/api/recipients", { signal });
+  },
+
+  /** GET /api/copies/{copyCode}/file — 배포본 PNG. download 면 첨부파일로 내려받는다 */
+  copyFileUrl(copyCode: string, download = false) {
+    return `${BASE_URL}/api/copies/${encodeURIComponent(copyCode)}/file${download ? "?download=1" : ""}`;
   },
 };

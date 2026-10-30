@@ -4,16 +4,19 @@ import { Blueprint, Icon, ShieldLogo, type IconName } from "../components/Icon";
 const NAV = ["제품 소개", "주요 기능", "도입 효과", "보안 기술", "고객사례"];
 
 const HOW_IT_WORKS = [
-  { no: "01", title: "유출 파일 업로드", desc: ["이미지 파일을 업로드하여", "워터마크를 분석합니다."] },
-  { no: "02", title: "사본 식별 및 검출", desc: ["파일에 삽입된 식별 정보를", "분석하여 문서와 사본을 식별합니다."] },
-  { no: "03", title: "배포 경로 역추적", desc: ["식별된 사본의 배포 계보를 따라", "문서의 전달 경로를 시각화합니다."] },
+  { no: "01", title: "배포본 발급", desc: ["원본을 등록하고 받는 사람마다", "고유한 워터마크 사본을 만듭니다."] },
+  { no: "02", title: "유출 이미지 분석", desc: ["유출된 이미지를 업로드하면", "워터마크로 사본을 식별합니다."] },
+  { no: "03", title: "배포 경로 역추적", desc: ["식별된 사본에서 원본까지의", "배포 계보를 시각화합니다."] },
 ];
 
 interface LandingPageProps {
+  /** 유출 조사 (업로드) */
   onStart: () => void;
+  /** 배포본 발급 (문서 등록) */
+  onIssue: () => void;
 }
 
-export function LandingPage({ onStart }: LandingPageProps) {
+export function LandingPage({ onStart, onIssue }: LandingPageProps) {
   return (
     <div className="landing">
       <section className="hero">
@@ -43,9 +46,9 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 이제 추적할 수 있습니다.
               </h1>
               <p className="hero-lead">
-                유출된 문서의 워터마크를 분석하고,{" "}
+                배포하는 문서마다 보이지 않는 워터마크를 넣고,{" "}
                 <br />
-                확인된 배포 경로를 역추적하는 기업용 문서 보안 솔루션입니다.
+                유출되면 확인된 배포 경로를 역추적하는 기업용 문서 보안 솔루션입니다.
               </p>
 
               <div className="start-card">
@@ -61,8 +64,23 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 </button>
               </div>
 
+              <div className="start-card is-secondary">
+                <span className="start-card-icon">
+                  <Icon name="file" size={26} />
+                </span>
+                <div className="start-card-text">
+                  <strong>
+                    배포본 발급하기 <span className="badge-new">NEW</span>
+                  </strong>
+                  <span>원본을 등록하고 받는 사람별 워터마크 사본을 만드세요.</span>
+                </div>
+                <button type="button" className="start-card-go" onClick={onIssue} aria-label="배포본 발급하기">
+                  <Icon name="arrowRight" size={26} strokeWidth={2.2} />
+                </button>
+              </div>
+
               <ul className="hero-checks">
-                {["이미지 (JPG, PNG) 지원", "워터마크 자동 검출", "배포 경로 시각화"].map((t) => (
+                {["이미지 (JPG, PNG) 지원", "받는 사람별 사본 발급", "배포 경로 시각화"].map((t) => (
                   <li key={t}>
                     <Icon name="checkCircle" size={18} />
                     {t}
@@ -78,8 +96,8 @@ export function LandingPage({ onStart }: LandingPageProps) {
 
       <section className="how" aria-labelledby="how-title">
         <p className="eyebrow">HOW IT WORKS</p>
-        <h2 id="how-title">복잡한 유출 조사, 세 단계로 간단하게.</h2>
-        <p className="how-lead">유출 문서를 업로드하면, 워터마크를 분석하여 사본을 식별하고 배포 경로를 추적합니다.</p>
+        <h2 id="how-title">배포부터 유출 조사까지, 세 단계로 간단하게.</h2>
+        <p className="how-lead">문서를 배포할 때 사본을 발급해 두면, 유출된 이미지 한 장으로 배포 경로를 추적합니다.</p>
         <ol className="how-grid">
           {HOW_IT_WORKS.map((item, i) => (
             <li key={item.no} className="how-card">
@@ -95,7 +113,7 @@ export function LandingPage({ onStart }: LandingPageProps) {
                 </div>
               </div>
               <div className="how-visual" aria-hidden="true">
-                {i === 0 && <HowUpload />}
+                {i === 0 && <HowIssue />}
                 {i === 1 && <HowDetect />}
                 {i === 2 && <HowTrace />}
               </div>
@@ -195,19 +213,27 @@ function ProductPreview() {
   );
 }
 
-function HowUpload() {
+function HowIssue() {
   return (
-    <div className="how-upload">
-      <div className="how-upload-drop">
-        <Icon name="image" size={30} />
-      </div>
-      <div className="how-upload-file">
-        <Icon name="checkCircle" size={16} />
-        <div>
-          <b>OLED_설계도.png</b>
-          <span>2.4MB</span>
-        </div>
-      </div>
+    <div className="how-issue">
+      <Blueprint className="how-issue-doc" />
+      <Icon name="arrowRight" size={22} className="how-issue-arrow" />
+      <ul>
+        <li>
+          <span>
+            <Icon name="user" size={14} />
+          </span>
+          <b>직원 B</b>
+          <em>COPY-B102</em>
+        </li>
+        <li>
+          <span>
+            <Icon name="building" size={14} />
+          </span>
+          <b>협력사 C</b>
+          <em>COPY-C203</em>
+        </li>
+      </ul>
     </div>
   );
 }
