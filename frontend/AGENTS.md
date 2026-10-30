@@ -8,16 +8,16 @@
 유출 의심 이미지를 올리면 → 워터마크로 **배포 사본**을 식별하고 → 원본 문서까지의 **등록된 배포 경로**를 보여주는 웹 화면.
 흐름: **랜딩 → 파일 업로드 → 분석 시작(파일 확인) → 분석 진행 → 결과 확인 → 배포 경로 모달**
 
-## 2. 스택 (프론트 팀이 채워주세요)
+## 2. 스택
 
 | 항목 | 결정 |
 |---|---|
-| 프레임워크 | _TBD (예: React 18 + Vite)_ |
-| 언어 | _TBD (TypeScript 권장 — API 타입이 명세서에 TS 로 정의되어 있음)_ |
-| 스타일링 | _TBD_ |
-| 라우팅 | _TBD_ |
-| 서버 상태 / 폴링 | _TBD_ |
-| 패키지 매니저 | _TBD_ |
+| 프레임워크 | React 19 + Vite |
+| 언어 | TypeScript (`src/api/types.ts` = 명세서 8장 타입) |
+| 스타일링 | 일반 CSS 한 파일 (`src/styles.css`), 폰트 Pretendard |
+| 라우팅 | 없음 — `App.tsx` 의 화면 상태로 전환 |
+| 서버 상태 / 폴링 | 라이브러리 없음 — `fetch` + `AbortController`, `setTimeout` 1초 폴링 |
+| 패키지 매니저 | npm |
 | 개발 서버 포트 | `5173` (백엔드 CORS 기본 허용 출처. 바꾸면 백엔드 `CORS_ALLOWED_ORIGINS` 도 바꿔야 함) |
 | 디자인 | Figma: https://www.figma.com/design/7Prp3tIq5KXj583V9inMd3/ |
 
