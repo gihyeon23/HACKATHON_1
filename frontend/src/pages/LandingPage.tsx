@@ -23,7 +23,7 @@ export function LandingPage({ onStart, onIssue, onOpenHck }: LandingPageProps) {
           <header className="hero-nav">
             <span className="brand">
               <ShieldLogo />
-              TraceGuard
+              ReTrace
             </span>
           </header>
 
@@ -141,7 +141,7 @@ function ProductPreview() {
       <aside className="preview-side">
         <span className="preview-brand">
           <ShieldLogo size={18} />
-          TraceGuard
+          ReTrace
         </span>
         <ul>
           {SIDEBAR.map((s) => (

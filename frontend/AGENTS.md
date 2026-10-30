@@ -1,4 +1,4 @@
-# AGENTS.md — TraceGuard 프론트엔드 작업 규칙
+# AGENTS.md — ReTrace 프론트엔드 작업 규칙
 
 > AI 코딩 도구(Claude Code, Cursor, Codex 등)와 사람이 함께 읽는 규칙입니다. **코드를 쓰기 전에 끝까지 읽으세요.**
 > 이 파일과 [`docs/API_SPEC.md`](../docs/API_SPEC.md)가 충돌하면 API 명세서가 우선입니다.

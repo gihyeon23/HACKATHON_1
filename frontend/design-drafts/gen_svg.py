@@ -1,5 +1,5 @@
 """워터마크 삽입 흐름(07 문서 등록 · 08 사본 발급 · 09 발급 완료) 시안 SVG 생성.
-기존 TraceGuard 화면(1536x1080)과 같은 토큰·레이아웃을 쓴다. 텍스트는 Figma 에서 편집되도록 <text> 로 둔다."""
+기존 ReTrace 화면(1536x1080)과 같은 토큰·레이아웃을 쓴다. 텍스트는 Figma 에서 편집되도록 <text> 로 둔다."""
 import sys
 from html import escape
 
@@ -381,7 +381,7 @@ def page06():
            rect(0, 0, W, 1240, 0, ICE),
            rect(0, 0, W, 700, 0, "url(#hero)"), rect(0, 0, W, 700, 0, "url(#glow)")]
     # 상단 내비 (메뉴는 텍스트만, 로그인 없음)
-    out.append(shield(124, 80, 30, "#fff", "#2a5ee8") + text(162, 102, "TraceGuard", 21, 700, "#fff"))
+    out.append(shield(124, 80, 30, "#fff", "#2a5ee8") + text(162, 102, "ReTrace", 21, 700, "#fff"))
     for i, m in enumerate(["제품 소개", "주요 기능", "도입 효과", "보안 기술", "고객사례"]):
         out.append(text(338 + i * 87, 99, m, 15, 400, "#e6edff"))
     out.append(rect(1252, 72, 160, 44, 8, "#fff") + text(1316, 100, "무료로 시작하기", 15, 700, BLUE, "middle") + icon("arrowRight", 1376, 86, 16, BLUE, 2.2))
@@ -402,7 +402,7 @@ def page06():
     px, py = 760, 160
     out.append(rect(px, py, 820, 500, 22, "rgba(255,255,255,0.2)"))
     out.append(rect(px + 10, py + 12, 150, 470, 14, "#fff"))
-    out.append(shield(px + 28, py + 32, 18, BLUE, "#fff") + text(px + 52, py + 46, "TraceGuard", 13, 700, BLUE))
+    out.append(shield(px + 28, py + 32, 18, BLUE, "#fff") + text(px + 52, py + 46, "ReTrace", 13, 700, BLUE))
     for i, (ic, m) in enumerate([("square", "대시보드"), ("file", "문서 관리"), ("search", "유출 조사"), ("share", "경로 추적"), ("square", "보고서")]):
         yy = py + 84 + i * 38
         if m == "유출 조사":
@@ -507,7 +507,7 @@ def page00():
            '<defs>' + SHADOW + f'<marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 10 5 0 10z" fill="{BLUE}"/></marker>'
            f'<marker id="arg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 10 5 0 10z" fill="{MUTED2}"/></marker></defs>',
            rect(0, 0, FW, FH, 0, "#fff")]
-    out.append(text(80, 100, "TraceGuard 전체 화면 흐름", 36, 800, INK, ls=-0.6))
+    out.append(text(80, 100, "ReTrace 전체 화면 흐름", 36, 800, INK, ls=-0.6))
     out.append(text(80, 138, "배포본 발급(신규 07~09)과 유출 조사(기존 02~06)가 랜딩에서 갈라지고, 발급 완료 화면에서 다시 유출 조사로 이어집니다.", 17, 400, MUTED))
     # 범례
     out.append(rect(1460, 74, 18, 18, 4, "#fff", BLUE, 2) + text(1488, 89, "신규 화면", 14, 400, INK2))

@@ -6,6 +6,7 @@ import { Icon } from "../components/Icon";
 import { recipientLabel } from "../lib/format";
 
 const VIEWER_STEPS = ["보호 파일 선택", "열람자 확인", "문서 보기"];
+// 이전 서비스명(TraceGuard) 때의 키를 유지한다. 바꾸면 기존 열람자가 새 기기로 인식된다
 const IDENTITY_KEY = "traceguard.viewer";
 
 interface Identity {
@@ -108,7 +109,7 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
       return;
     }
     try {
-      const [handle] = await picker({ types: [{ description: "TraceGuard 보호 파일", accept: { "application/x-hck": [".hck"] } }] });
+      const [handle] = await picker({ types: [{ description: "ReTrace 보호 파일", accept: { "application/x-hck": [".hck"] } }] });
       const picked = await handle.getFile();
       pick(picked, picked.name, handle);
     } catch {
