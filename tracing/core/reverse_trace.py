@@ -2,11 +2,11 @@
 역추적: 밖에서 발견된 .hck 파일 하나로 "지금 가진 사람 → … → 원본 작성자"를 거슬러 올라간다.
 서버·브라우저·키가 없어도 동작한다 (장부 서명 검증에는 서버 비밀값만 필요).
 
-  .venv/bin/python tracing/hck-format/scripts/reverse_trace.py poc/backend/demo/found_D.hck
-  .venv/bin/python tracing/hck-format/scripts/reverse_trace.py demo/            # 폴더 안 .hck 전부
-  .venv/bin/python tracing/hck-format/scripts/reverse_trace.py found.hck --json # 대시보드·보고서용 JSON
+  .venv/bin/python tracing/core/reverse_trace.py tracing/server/demo/found_D.hck
+  .venv/bin/python tracing/core/reverse_trace.py demo/            # 폴더 안 .hck 전부
+  .venv/bin/python tracing/core/reverse_trace.py found.hck --json # 대시보드·보고서용 JSON
 
-서버 비밀값: 환경변수 HCK_SERVER_SECRET → 없으면 poc/backend/.env → 없으면 시연용 기본값
+서버 비밀값: 환경변수 HCK_SERVER_SECRET → 없으면 tracing/server/.env → 없으면 시연용 기본값
 """
 import json
 import os
@@ -14,14 +14,14 @@ import sys
 from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.abspath(os.path.join(HERE, "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(HERE, ".."))  # tracing/
 KST = timezone(timedelta(hours=9))
 
 
 def _load_secret():
     if os.environ.get("HCK_SERVER_SECRET"):
         return
-    env = os.path.join(ROOT, "poc", "backend", ".env")
+    env = os.path.join(ROOT, "server", ".env")
     if os.path.exists(env):
         for line in open(env, encoding="utf-8"):
             if line.strip().startswith("HCK_SERVER_SECRET="):

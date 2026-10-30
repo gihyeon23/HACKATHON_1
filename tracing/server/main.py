@@ -1,4 +1,4 @@
-"""TraceGuard 백엔드. 실행: uvicorn main:app --port 8000 (poc/backend 에서)"""
+"""TraceGuard 백엔드. 실행: uvicorn main:app --port 8001 (tracing/server 에서)"""
 import base64
 import logging
 

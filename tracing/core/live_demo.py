@@ -1,7 +1,7 @@
 """
 라이브 시연용: 엔터를 누를 때마다 한 단계씩 진행
-  .venv/bin/python tracing/hck-format/scripts/live_demo.py [이미지경로]
-이미지를 안 주면 tracing/ui-mockups/team_TraceGuard.png 를 원본으로 사용
+  .venv/bin/python tracing/core/live_demo.py [이미지경로]
+이미지를 안 주면 tracing/server/demo/sample_blueprint.png 를 원본으로 사용
 결과 파일은 demo/live/ 에 생김 (A.hck, B.hck, C.hck, D.hck, B가_본_화면.png)
 """
 import json
@@ -13,7 +13,7 @@ from datetime import datetime, timedelta, timezone
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import hck  # noqa: E402
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))  # tracing/
 OUT = os.path.join(ROOT, "demo", "live")
 KST = timezone(timedelta(hours=9))
 R, G, Y, B, D, X = "\033[91m", "\033[92m", "\033[93m", "\033[94m", "\033[2m", "\033[0m"
@@ -51,7 +51,7 @@ def show_path(path_file):
 
 
 def main():
-    img = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "tracing", "ui-mockups", "team_TraceGuard.png")
+    img = sys.argv[1] if len(sys.argv) > 1 else os.path.join(ROOT, "server", "demo", "sample_blueprint.png")
     os.makedirs(OUT, exist_ok=True)
     f = lambda n: os.path.join(OUT, n)
     print(f"{Y}=== TraceGuard 라이브 시연: A → B → C → D 유출 추적 ==={X}  원본: {os.path.basename(img)}")

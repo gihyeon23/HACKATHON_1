@@ -1,4 +1,4 @@
-"""tracing/의 hck.py 를 가져와 서버용으로 감싼다. 원본 코드는 고치지 않는다.
+"""tracing/core/의 hck.py 를 가져와 서버용으로 감싼다. 원본 코드는 고치지 않는다.
 
 hck.py 에 없어서 여기서 막는 것
 - 업로드 zip 검사: 이름 3개 고정, 압축 해제 크기 제한, 장부 형식 검사
@@ -23,7 +23,7 @@ from cryptography.exceptions import InvalidTag
 import hck_store as store
 
 BACKEND_DIR = Path(__file__).resolve().parent
-sys.path.insert(0, str(BACKEND_DIR.parent.parent / "tracing" / "hck-format" / "scripts"))
+sys.path.insert(0, str(BACKEND_DIR.parent / "core"))
 import hck  # noqa: E402
 
 MAX_UPLOAD = 25 * 1024 * 1024
@@ -56,7 +56,7 @@ def _env_value(name: str):
 
 _secret = _env_value("HCK_SERVER_SECRET")
 if not _secret:
-    raise RuntimeError("HCK_SERVER_SECRET 이 없습니다. poc/backend/.env 에 넣어 주세요.")
+    raise RuntimeError("HCK_SERVER_SECRET 이 없습니다. tracing/server/.env 에 넣어 주세요.")
 hck.SERVER_SECRET = _secret.encode()
 hck.KEY_STORE = store.SqliteKeyStore()
 DEMO_MODE = _env_value("HCK_DEMO") == "1"

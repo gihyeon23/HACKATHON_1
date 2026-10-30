@@ -48,3 +48,6 @@ node_modules/
 .venv/
 demo/live/
 __pycache__/
+.pytest_cache/
+*.pyc
+watermark/out/

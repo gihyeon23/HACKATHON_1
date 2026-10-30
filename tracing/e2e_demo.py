@@ -1,6 +1,6 @@
-"""시연 시나리오를 크롬에서 끝까지 자동 재현한다. 백엔드(8000)와 프론트(5173)가 떠 있어야 한다.
+"""시연 시나리오를 크롬에서 끝까지 자동 재현한다. 백엔드(8001)와 프론트(5173)가 떠 있어야 한다.
 
-  python poc/e2e_demo.py --runs 3
+  python tracing/e2e_demo.py --runs 3
 
 크롬 파일 선택 창은 자동화할 수 없어서 showOpenFilePicker 만 메모리 가짜로 바꾼다.
 화면 코드와 서버는 진짜를 쓴다. 스크린샷은 마지막 회차만 outputs/화면점검/{시각}/ 에 남긴다.
@@ -15,7 +15,7 @@ from pathlib import Path
 from playwright.sync_api import expect, sync_playwright
 
 WEB = "http://localhost:5173"
-API = "http://localhost:8000"
+API = "http://localhost:8001"
 
 FAKE_PICKER = """
 window.__written = null;
