@@ -58,3 +58,44 @@ export interface AnalysisResult {
   pathSummary: string;
   path: PathNode[];
 }
+
+// ===== 부록 A (문서 등록 · 사본 발급) =====
+// 명세서 8장에 타입이 없어 백엔드 DTO(DocumentResponse · CopyResponse · RecipientResponse) 기준으로 작성했다.
+
+export interface DocumentCreated {
+  docCode: string;
+  title: string;
+  width: number | null;
+  height: number | null;
+  createdAt: string;         // ISO-8601, 타임존 없음 (서버 KST)
+}
+
+export interface CopyIssued {
+  copyCode: string;
+  recipientId: number;
+  docCode: string;
+  name: string;
+  recipientType: RecipientType;
+  parentCopyCode: string | null;
+  width: number | null;
+  height: number | null;
+  strength: number | null;
+  predictedZ: number | null;
+  threshold: number | null;
+  psnr: number | null;       // 삽입 화질 (dB)
+  ssim: number | null;       // 구조 유사도 0~1
+  elapsedMs: number | null;
+  fileUrl: string;
+}
+
+export interface RecipientEntry {
+  recipientId: number;
+  copyCode: string;
+  parentCopyCode: string | null;
+  docCode: string | null;
+  name: string;
+  recipientType: RecipientType;
+  width: number | null;
+  height: number | null;
+  createdAt: string;
+}

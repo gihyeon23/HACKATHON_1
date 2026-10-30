@@ -1,17 +1,19 @@
 import type { ReactNode } from "react";
 import { Icon } from "./Icon";
 
-const STEPS = ["파일 업로드", "분석 진행", "결과 확인"];
+const ANALYSIS_STEPS = ["파일 업로드", "분석 진행", "결과 확인"];
 
 interface AppShellProps {
   /** 1 · 2 · 3 — 현재 단계 */
   step: 1 | 2 | 3;
   breadcrumb: string[];
+  /** 스테퍼 단계 이름 3개. 기본은 유출 조사 흐름 */
+  steps?: string[];
   children: ReactNode;
 }
 
-/** 업로드 · 진행 · 결과 화면 공통 틀: 브레드크럼, 상단 아이콘, 3단계 스테퍼 */
-export function AppShell({ step, breadcrumb, children }: AppShellProps) {
+/** 앱 화면 공통 틀: 브레드크럼, 상단 아이콘, 3단계 스테퍼 */
+export function AppShell({ step, breadcrumb, steps = ANALYSIS_STEPS, children }: AppShellProps) {
   return (
     <div className="app-bg">
       <div className="app-panel">
@@ -34,14 +36,14 @@ export function AppShell({ step, breadcrumb, children }: AppShellProps) {
         </header>
 
         <ol className="stepper" aria-label="진행 단계">
-          {STEPS.map((label, i) => {
+          {steps.map((label, i) => {
             const n = i + 1;
             const state = n < step ? "done" : n === step ? "current" : "todo";
             return (
               <li key={label} className={`stepper-item is-${state}`} aria-current={state === "current" ? "step" : undefined}>
                 <span className="stepper-dot">{state === "done" ? <Icon name="check" size={14} strokeWidth={2.6} /> : n}</span>
                 <span className="stepper-label">{label}</span>
-                {i < STEPS.length - 1 && <span className="stepper-line" />}
+                {i < steps.length - 1 && <span className="stepper-line" />}
               </li>
             );
           })}
