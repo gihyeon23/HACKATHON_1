@@ -12,6 +12,9 @@ public interface RecipientRepository extends JpaRepository<Recipient, Long> {
 
     Optional<Recipient> findByRecipientId(Long recipientId);
 
+    /** 보호 파일(.hck) 열람: 장부의 사본이 그 문서의 사본인지 함께 확인한다 */
+    Optional<Recipient> findByCopyCodeAndDocument_DocCode(String copyCode, String docCode);
+
     boolean existsByCopyCode(String copyCode);
 
     boolean existsByRecipientId(Long recipientId);
