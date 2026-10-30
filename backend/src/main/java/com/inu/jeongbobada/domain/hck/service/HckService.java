@@ -103,17 +103,17 @@ public class HckService {
         Recipient holderCopy = recipientRepository.findByCopyCodeAndDocument_DocCode(holder.copyCode(), manifest.docCode())
                 .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND, ErrorCode.COPY_NOT_FOUND,
                         "보호 파일의 사본이 배포 기록에 없습니다: " + holder.copyCode()));
-        String viewer = StringUtils.hasText(viewerId) ? hckLedger.viewerTag(viewerId.trim()) : null;
-
-        // 같은 기기가 다시 열었다
-        if (viewer != null && viewer.equals(holder.viewer())) {
-            return response(file, manifest, ledger, holderCopy.getCopyCode(), holderCopy.getName(), parentOf(ledger), true);
-        }
-
         if (!StringUtils.hasText(name)) {
             throw new ApiException(HttpStatus.BAD_REQUEST, ErrorCode.INVALID_REQUEST, "열람자 이름을 입력해주세요");
         }
         String viewerName = name.trim();
+        // 같은 사람 = 같은 기기 + 같은 이름. PC 하나를 여럿이 쓰면 이름이 다르면 다른 열람자로 본다
+        String viewer = StringUtils.hasText(viewerId) ? hckLedger.viewerTag(viewerId.trim(), viewerName) : null;
+
+        // 같은 사람이 다시 열었다
+        if (viewer != null && viewer.equals(holder.viewer())) {
+            return response(file, manifest, ledger, holderCopy.getCopyCode(), holderCopy.getName(), parentOf(ledger), true);
+        }
 
         // 사본 주인이 처음 연 경우: 새 사본 없이 기기만 연결한다 (원본 → A → A 가 되지 않게)
         if (holder.viewer() == null && viewerName.equals(holderCopy.getName())) {

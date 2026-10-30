@@ -89,10 +89,31 @@ class HckControllerTest {
         assertThat(claimed.get("ledger").size()).isEqualTo(2);
         assertThat(claimed.get("ledger").get(1).get("event").asString()).isEqualTo("CLAIM");
 
-        JsonNode again = body(open(hck(claimed), "아무개", null, "device-A").andExpect(status().isOk()));
+        JsonNode again = body(open(hck(claimed), "유기현", null, "device-A").andExpect(status().isOk()));
         assertThat(again.get("copyCode").asString()).isEqualTo("COPY-B01");
         assertThat(again.get("ledger").size()).isEqualTo(2);
         assertThat(recipientRepository.count()).isEqualTo(1);
+    }
+
+    @Test
+    void 같은_기기라도_이름이_다르면_다른_열람자로_이어진다() throws Exception {
+        // PC 하나를 여럿이 쓰는 경우 (한 브라우저에서 차례로 시연)
+        JsonNode a = body(open(export("COPY-B01"), "유기현", null, "shared-pc"));
+        JsonNode b = body(open(hck(a), "한의진", null, "shared-pc").andExpect(status().isOk()));
+        assertThat(b.get("reopened").asBoolean()).isFalse();
+        assertThat(b.get("parentName").asString()).isEqualTo("유기현");
+
+        JsonNode c = body(open(hck(b), "이민섭", null, "shared-pc").andExpect(status().isOk()));
+        assertThat(c.get("parentName").asString()).isEqualTo("한의진");
+
+        JsonNode cAgain = body(open(hck(c), "이민섭", null, "shared-pc"));
+        assertThat(cAgain.get("reopened").asBoolean()).isTrue();
+
+        mockMvc.perform(get("/api/copies/" + c.get("copyCode").asString() + "/path"))
+                .andExpect(jsonPath("$.length()").value(4))
+                .andExpect(jsonPath("$[1].name").value("유기현"))
+                .andExpect(jsonPath("$[2].name").value("한의진"))
+                .andExpect(jsonPath("$[3].name").value("이민섭"));
     }
 
     @Test

@@ -90,9 +90,9 @@ public class HckLedger {
         return Verification.OK;
     }
 
-    /** 열람 기기 식별값은 원래 값 대신 서버 키로 만든 짧은 값만 장부에 남긴다 */
-    public String viewerTag(String viewerId) {
-        return HEX.formatHex(hmac(signKey, "viewer" + SEP + viewerId)).substring(0, 16);
+    /** 열람자(기기 + 이름) 식별값은 원래 값 대신 서버 키로 만든 짧은 값만 장부에 남긴다 */
+    public String viewerTag(String viewerId, String name) {
+        return HEX.formatHex(hmac(signKey, "viewer" + SEP + viewerId + SEP + name)).substring(0, 16);
     }
 
     private static String hash(HckEntry e) {
