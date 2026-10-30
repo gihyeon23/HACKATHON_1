@@ -34,6 +34,7 @@ public class HckLedger {
 
     public HckLedger(StorageProperties properties) {
         byte[] master = Base64.getDecoder().decode(properties.encryptionKey().trim());
+        // 이전 서비스명(TraceGuard) 그대로 둔다. 바꾸면 이미 발급한 .hck 의 서명이 모두 맞지 않게 된다
         this.signKey = hmac(master, "TraceGuard/hck-ledger/v1");
     }
 

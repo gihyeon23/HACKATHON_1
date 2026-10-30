@@ -1,4 +1,4 @@
-# TraceGuard 백엔드 API 명세 (프론트엔드용)
+# ReTrace 백엔드 API 명세 (프론트엔드용)
 
 > 대상: `frontend/` 개발자 · 기준 브랜치: `develop` · 서버: Spring Boot `http://localhost:8080`
 >
