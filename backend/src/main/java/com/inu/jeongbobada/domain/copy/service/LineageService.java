@@ -65,10 +65,11 @@ public class LineageService {
         }
 
         List<PathNode> path = new ArrayList<>(chain.size() + 1);
-        path.add(new PathNode(document.getDocCode(), document.getTitle(), PathNode.ORIGINAL, PathNode.ROLE_ORIGINAL));
+        path.add(new PathNode(document.getDocCode(), document.getTitle(), PathNode.ORIGINAL, PathNode.ROLE_ORIGINAL,
+                null));
         for (Recipient copy : chain) {
             String role = copy == identified ? PathNode.ROLE_IDENTIFIED : PathNode.ROLE_INTERMEDIATE;
-            path.add(new PathNode(copy.getCopyCode(), copy.getName(), PathNode.COPY, role));
+            path.add(new PathNode(copy.getCopyCode(), copy.getName(), PathNode.COPY, role, copy.getRecipientType()));
         }
         return path;
     }

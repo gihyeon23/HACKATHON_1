@@ -29,7 +29,10 @@ public record AnalysisStatusResponse(
     private static final double ESTIMATE_TAU_MS = 3000.0;
     private static final int RUNNING_STEP_PROGRESS = 50;
 
-    public record Step(AnalysisStep key, String name, StepStatus status, int progress) {
+    /**
+     * @param elapsedMs 이 단계에 걸린 시간 (진행 중이면 지금까지). 시작 전이면 null
+     */
+    public record Step(AnalysisStep key, String name, StepStatus status, int progress, Long elapsedMs) {
     }
 
     public static AnalysisStatusResponse of(Analysis analysis, LocalDateTime now) {
@@ -58,16 +61,15 @@ public record AnalysisStatusResponse(
     }
 
     private static Step step(AnalysisStep key, LocalDateTime startedAt, LocalDateTime endedAt, LocalDateTime until) {
-        if (endedAt != null) {
-            return new Step(key, key.getLabel(), StepStatus.DONE, 100);
-        }
         if (startedAt == null) {
-            return new Step(key, key.getLabel(), StepStatus.PENDING, 0);
+            return new Step(key, key.getLabel(), StepStatus.PENDING, 0, null);
         }
-        int progress = key == AnalysisStep.WATERMARK
-                ? estimate(Duration.between(startedAt, until).toMillis())
-                : RUNNING_STEP_PROGRESS;
-        return new Step(key, key.getLabel(), StepStatus.RUNNING, progress);
+        if (endedAt != null) {
+            return new Step(key, key.getLabel(), StepStatus.DONE, 100, Duration.between(startedAt, endedAt).toMillis());
+        }
+        long elapsedMs = Duration.between(startedAt, until).toMillis();
+        int progress = key == AnalysisStep.WATERMARK ? estimate(elapsedMs) : RUNNING_STEP_PROGRESS;
+        return new Step(key, key.getLabel(), StepStatus.RUNNING, progress, elapsedMs);
     }
 
     static int estimate(long elapsedMs) {
