@@ -1,4 +1,4 @@
-# TraceGuard 프론트엔드
+# ReTrace 프론트엔드
 
 유출 의심 이미지를 올려 배포 사본을 식별하고, 등록된 배포 경로를 보여주는 화면입니다.
 작업 규칙은 [AGENTS.md](AGENTS.md), API 는 [docs/API_SPEC.md](../docs/API_SPEC.md) 를 따릅니다.
