@@ -5,7 +5,7 @@ import { AppShell } from "../components/AppShell";
 import { DistributionPathModal } from "../components/DistributionPathModal";
 import { Icon } from "../components/Icon";
 import { ImageViewer } from "../components/ImageViewer";
-import { detectionLabel, detectionScore, formatAnalyzedAt, formatBytes, formatResolution } from "../lib/format";
+import { detectionLabel, detectionScore, formatAnalyzedAt, formatBytes, formatResolution, recipientLabel } from "../lib/format";
 
 // 결과가 COMPLETED 면 모두 성립하는 고정 문구 (API_SPEC 5장)
 const SUMMARY = [
@@ -100,6 +100,42 @@ export function ResultPage({ analysisId, onRestart }: ResultPageProps) {
         <h1>문서 사본을 식별했습니다.</h1>
       </div>
       <p className="result-hero-desc">업로드한 이미지에서 워터마크가 검출되었으며, 등록된 배포 기록과 연결된 사본을 확인했습니다.</p>
+
+      {/* 유출본이 누구에게 배포된 사본인지를 가장 먼저 보이게 한다. 실제 유출자로 단정하지 않는다 */}
+      <section className="card spotlight" aria-labelledby="spotlight-name">
+        <p className="spotlight-label">
+          <span className="spotlight-dot" aria-hidden="true" />
+          유출본의 사본 수령자
+        </p>
+        <div className="spotlight-main">
+          <span className="spotlight-avatar" aria-hidden="true">
+            {r.recipientName.trim().charAt(0)}
+          </span>
+          <div className="spotlight-who">
+            <h2 id="spotlight-name">
+              {r.recipientName}
+              <span className="spotlight-type">
+                <Icon name={r.recipientType === "EMPLOYEE" ? "user" : "building"} size={15} />
+                {recipientLabel(r.recipientType)}
+              </span>
+            </h2>
+            <p>
+              {r.copyCode} · 검출 신뢰도 {level}
+            </p>
+          </div>
+        </div>
+        <ol className="spotlight-path" aria-label="배포 경로">
+          {r.path.map((node, i) => (
+            <li key={node.code} className={i === r.path.length - 1 ? "is-target" : undefined}>
+              {node.type === "ORIGINAL" ? "원본" : node.name}
+            </li>
+          ))}
+        </ol>
+        <p className="spotlight-note">
+          <Icon name="info" size={15} />
+          등록된 배포 기록 기준이며 실제 유출자를 확정하지 않습니다.
+        </p>
+      </section>
 
       <section className="card result-card" aria-label="분석 파일 정보">
         <div className="result-thumb">
