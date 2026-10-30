@@ -96,8 +96,8 @@ export function LandingPage({ onStart, onIssue }: LandingPageProps) {
 
       <section className="how" aria-labelledby="how-title">
         <p className="eyebrow">HOW IT WORKS</p>
-        <h2 id="how-title">복잡한 유출 조사, 세 단계로 간단하게.</h2>
-        <p className="how-lead">유출 문서를 업로드하면, 워터마크를 분석하여 사본을 식별하고 배포 경로를 추적합니다.</p>
+        <h2 id="how-title">배포부터 유출 조사까지, 세 단계로 간단하게.</h2>
+        <p className="how-lead">문서를 배포할 때 사본을 발급해 두면, 유출된 이미지 한 장으로 배포 경로를 추적합니다.</p>
         <ol className="how-grid">
           {HOW_IT_WORKS.map((item, i) => (
             <li key={item.no} className="how-card">
