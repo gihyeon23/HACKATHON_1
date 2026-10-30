@@ -3,6 +3,7 @@
 ## 구조
 ```
 .
+├── frontend/     프론트엔드 (예정) — backend /api 만 호출
 ├── backend/      자바 웹 (Spring Boot, :8080) — 수신자 대장·검출 이력·API
 ├── tracing/      .hck 파일 유출 경로 역추적 (Python FastAPI :8001 + React :5173)
 ├── watermark/    휴대폰 촬영본 워터마크 추출 엔진 (Python Flask, :8000)
