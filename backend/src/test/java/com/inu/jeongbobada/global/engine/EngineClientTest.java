@@ -56,6 +56,39 @@ class EngineClientTest {
     }
 
     @Test
+    void 기준_이미지를_reference_파트로_함께_보낸다() {
+        server.expect(requestTo("http://engine/v1/detect"))
+                .andExpect(content().string(containsString("name=\"photo\"; filename=\"leak.png\"")))
+                .andExpect(content().string(containsString("name=\"reference\"; filename=\"COPY-C203.png\"")))
+                .andRespond(withSuccess("{\"found\":false,\"error\":\"NO_DOCUMENT\"}", MediaType.APPLICATION_JSON));
+
+        ObjectNode result = engineClient.detectWithReferences(
+                EngineClient.namedResource(new byte[]{1, 2}, "leak.png"), MediaType.IMAGE_PNG,
+                List.of(new EngineCandidate(1L, 10, 10)),
+                List.of(EngineClient.namedResource(new byte[]{3, 4}, "COPY-C203.png")));
+
+        assertThat(result.get("error").asString()).isEqualTo("NO_DOCUMENT");
+        server.verify();
+    }
+
+    @Test
+    void 사본_발급은_recipientId와_이미지를_embed로_보낸다() {
+        server.expect(requestTo("http://engine/v1/embed"))
+                .andExpect(method(HttpMethod.POST))
+                .andExpect(content().string(containsString("name=\"recipientId\"")))
+                .andExpect(content().string(containsString("2624297755")))
+                .andExpect(content().string(containsString("name=\"image\"; filename=\"DOC-A001.png\"")))
+                .andRespond(withSuccess("{\"recipientId\":2624297755,\"width\":1024,\"imagePng\":\"AA==\"}",
+                        MediaType.APPLICATION_JSON));
+
+        ObjectNode result = engineClient.embed(2624297755L,
+                EngineClient.namedResource(new byte[]{1, 2, 3}, "DOC-A001.png"));
+
+        assertThat(result.get("width").asInt()).isEqualTo(1024);
+        server.verify();
+    }
+
+    @Test
     void 엔진이_오류를_돌려주면_502로_변환한다() {
         server.expect(requestTo("http://engine/v1/detect"))
                 .andRespond(withServerError()

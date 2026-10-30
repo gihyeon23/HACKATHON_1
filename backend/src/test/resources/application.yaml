@@ -7,3 +7,10 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
+
+storage:
+  dir: build/test-storage
+  # 테스트 전용 키 (32바이트 0)
+  encryption-key: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+  # 테스트 중 정리 스케줄러가 끼어들지 않도록
+  cleanup-interval: 1h
