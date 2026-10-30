@@ -15,10 +15,11 @@ function nodeIcon(type: RecipientType | null): IconName {
 interface CopyIssuePageProps {
   doc: RegisteredDoc;
   onIssued: (copy: CopyIssued) => void;
+  onBack: () => void;
 }
 
 /** 08 사본 발급 — 받는 사람 · 유형 · 전달받은 사본을 받아 POST /api/documents/{docCode}/copies */
-export function CopyIssuePage({ doc, onIssued }: CopyIssuePageProps) {
+export function CopyIssuePage({ doc, onIssued, onBack }: CopyIssuePageProps) {
   const [name, setName] = useState("");
   const [type, setType] = useState<RecipientType>("EMPLOYEE");
   const [parent, setParent] = useState("");
@@ -84,7 +85,7 @@ export function CopyIssuePage({ doc, onIssued }: CopyIssuePageProps) {
   const total = base.length + 1;
 
   return (
-    <AppShell step={2} steps={ISSUE_STEPS} breadcrumb={["문서 관리", doc.title, "사본 발급"]}>
+    <AppShell step={2} steps={ISSUE_STEPS} breadcrumb={["문서 관리", doc.title, "사본 발급"]} onBack={onBack}>
       <div className="page-head">
         <h1>사본을 받을 사람을 지정하세요.</h1>
         <p>받는 사람마다 고유한 사본 ID가 워터마크로 들어갑니다. 전달 관계는 사본 대장에 기록됩니다.</p>

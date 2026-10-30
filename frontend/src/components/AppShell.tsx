@@ -9,25 +9,35 @@ interface AppShellProps {
   breadcrumb: string[];
   /** 스테퍼 단계 이름 3개. 기본은 유출 조사 흐름 */
   steps?: string[];
+  /** 이전 화면으로. 없으면 버튼을 그리지 않는다 (분석 진행 중 등) */
+  onBack?: () => void;
   children: ReactNode;
 }
 
 /** 앱 화면 공통 틀: 브레드크럼, 상단 아이콘, 3단계 스테퍼 */
-export function AppShell({ step, breadcrumb, steps = ANALYSIS_STEPS, children }: AppShellProps) {
+export function AppShell({ step, breadcrumb, steps = ANALYSIS_STEPS, onBack, children }: AppShellProps) {
   return (
     <div className="app-bg">
       <div className="app-panel">
         <header className="app-top">
-          <nav aria-label="현재 위치" className="breadcrumb">
-            <ol>
-              {breadcrumb.map((label, i) => (
-                <li key={label} aria-current={i === breadcrumb.length - 1 ? "page" : undefined}>
-                  {i > 0 && <Icon name="chevronRight" size={14} className="breadcrumb-sep" />}
-                  {label}
-                </li>
-              ))}
-            </ol>
-          </nav>
+          <div className="app-top-left">
+            {onBack && (
+              <button type="button" className="back-btn" onClick={onBack}>
+                <Icon name="chevronLeft" size={18} strokeWidth={2.2} />
+                이전
+              </button>
+            )}
+            <nav aria-label="현재 위치" className="breadcrumb">
+              <ol>
+                {breadcrumb.map((label, i) => (
+                  <li key={label} aria-current={i === breadcrumb.length - 1 ? "page" : undefined}>
+                    {i > 0 && <Icon name="chevronRight" size={14} className="breadcrumb-sep" />}
+                    {label}
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          </div>
           <div className="app-top-icons" aria-hidden="true">
             <Icon name="bell" size={22} />
             <span className="avatar">TC</span>
