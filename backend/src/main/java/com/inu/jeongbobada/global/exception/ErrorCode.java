@@ -19,6 +19,8 @@ public final class ErrorCode {
     public static final String ANALYSIS_CANCELED = "ANALYSIS_CANCELED";
     public static final String ANALYSIS_FINISHED = "ANALYSIS_FINISHED";
     public static final String INVALID_REQUEST = "INVALID_REQUEST";
+    public static final String HCK_INVALID = "HCK_INVALID";
+    public static final String HCK_TAMPERED = "HCK_TAMPERED";
 
     private ErrorCode() {
     }

@@ -14,9 +14,11 @@ interface LandingPageProps {
   onStart: () => void;
   /** 배포본 발급 (문서 등록) */
   onIssue: () => void;
+  /** 받은 보호 파일(.hck) 열기 */
+  onOpenHck: () => void;
 }
 
-export function LandingPage({ onStart, onIssue }: LandingPageProps) {
+export function LandingPage({ onStart, onIssue, onOpenHck }: LandingPageProps) {
   return (
     <div className="landing">
       <section className="hero">
@@ -78,6 +80,11 @@ export function LandingPage({ onStart, onIssue }: LandingPageProps) {
                   <Icon name="arrowRight" size={26} strokeWidth={2.2} />
                 </button>
               </div>
+
+              <button type="button" className="issue-link hck-link" onClick={onOpenHck}>
+                보호 파일(.hck)을 받으셨나요? <b>보호 파일 열기</b>
+                <Icon name="arrowRight" size={16} strokeWidth={2.2} />
+              </button>
 
               <ul className="hero-checks">
                 {["이미지 (JPG, PNG) 지원", "받는 사람별 사본 발급", "배포 경로 시각화"].map((t) => (
