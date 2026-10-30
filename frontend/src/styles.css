@@ -952,43 +952,51 @@ b.is-green {
   overflow: hidden;
 }
 
-.how-upload {
-  position: relative;
-  width: 240px;
-  height: 76px;
+.how-issue {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
-.how-upload-drop {
-  position: absolute;
-  inset: 0 90px 0 0;
-  display: grid;
-  place-items: center;
-  border: 1.5px dashed #9cb6f3;
-  border-radius: 4px;
-  background: var(--white);
+.how-issue-doc {
+  width: 112px;
+}
+
+.how-issue-arrow {
   color: var(--blue);
 }
 
-.how-upload-file {
-  position: absolute;
-  top: 0;
-  right: 0;
-  display: flex;
+.how-issue ul {
+  display: grid;
   gap: 8px;
-  padding: 8px 12px;
-  border-radius: 6px;
+}
+
+.how-issue li {
+  display: grid;
+  grid-template-columns: 26px auto;
+  column-gap: 8px;
+  align-items: center;
+  padding: 6px 12px 6px 8px;
+  border-radius: 8px;
   background: var(--white);
-  box-shadow: var(--shadow);
-  font-size: 11px;
+  font-size: 12px;
 }
 
-.how-upload-file svg {
-  color: var(--green);
+.how-issue li span {
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--blue-50);
+  color: var(--blue);
 }
 
-.how-upload-file span {
-  display: block;
+.how-issue li em {
   color: var(--muted);
+  font-size: 10px;
+  font-style: normal;
 }
 
 .how-detect {
@@ -1917,6 +1925,495 @@ b.is-green {
   margin-top: 60px;
 }
 
+/* ===== 랜딩 진입 카드 (보조) · 업로드 보조 링크 ===== */
+.start-card.is-secondary {
+  margin-top: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  color: var(--white);
+  box-shadow: none;
+}
+
+.start-card.is-secondary .start-card-icon {
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--white);
+}
+
+.start-card.is-secondary .start-card-text span {
+  color: #dbe6ff;
+}
+
+.start-card.is-secondary .start-card-go {
+  background: var(--white);
+  color: var(--blue);
+}
+
+.badge-new {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #ffd75e;
+  color: #7a4b00;
+  font-size: 11px;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
+.issue-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  max-width: 424px;
+  margin: 12px auto 0;
+  padding: 9px 16px;
+  border: 1px solid var(--blue-100);
+  border-radius: 999px;
+  background: var(--blue-50);
+  color: var(--ink-2);
+  font-size: 13px;
+}
+
+.issue-link b {
+  color: var(--blue);
+}
+
+.issue-link svg {
+  color: var(--blue);
+}
+
+.issue-link:hover {
+  border-color: var(--blue);
+}
+
+/* ===== 배포본 발급 (07 · 08 · 09) ===== */
+.form-card {
+  display: grid;
+  gap: 22px;
+  max-width: 832px;
+  margin: 0 auto;
+  padding: 26px 28px 28px;
+}
+
+.form-card-wide {
+  max-width: none;
+  margin: 0;
+}
+
+.field {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.field-label {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 0;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.req {
+  color: var(--blue);
+}
+
+.field-hint {
+  margin-left: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+}
+
+.field-help {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.field-help.center {
+  margin-top: -12px;
+  text-align: center;
+}
+
+.text-input {
+  width: 100%;
+  height: 52px;
+  padding: 0 18px;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.select-wrap {
+  position: relative;
+  display: block;
+}
+
+.select-wrap select {
+  appearance: none;
+  padding-right: 48px;
+  cursor: pointer;
+}
+
+.select-chevron {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.segmented {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--ice);
+}
+
+.segmented-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 46px;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.segmented-item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.segmented-item.is-on {
+  border-color: var(--blue);
+  background: var(--white);
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.segmented-item:has(input:focus-visible) {
+  outline: 3px solid rgba(37, 99, 235, 0.45);
+}
+
+.dropzone-sm {
+  padding: 18px 24px 22px;
+}
+
+.dropzone-sm .dropzone-title {
+  margin-top: 8px;
+  font-size: 16px;
+}
+
+.dropzone-sm .btn-pick {
+  margin-top: 14px;
+}
+
+.picked {
+  position: relative;
+  display: grid;
+  grid-template-columns: 262px minmax(0, 1fr);
+  gap: 24px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--ice);
+}
+
+.picked-thumb {
+  display: grid;
+  place-items: center;
+  height: 148px;
+  padding: 10px;
+  border-radius: 8px;
+  background: #eef2f8;
+}
+
+.picked-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.picked-body {
+  padding: 10px 44px 0 0;
+}
+
+.picked-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border-radius: 8px;
+}
+
+.form-card .action-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.form-card .banner {
+  margin: 0;
+}
+
+.issue-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 20px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.issue-side {
+  align-self: start;
+  padding: 20px;
+}
+
+.issue-side-thumb {
+  display: grid;
+  place-items: center;
+  height: 128px;
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  background: #eef2f8;
+}
+
+.issue-side-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.issue-side-title {
+  margin-top: 16px;
+  font-size: 17px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.mini-path-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 14px;
+}
+
+.mini-path {
+  display: grid;
+  margin-top: 12px;
+}
+
+.mini-node {
+  display: grid;
+  grid-template-columns: 52px 36px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+}
+
+.mini-node.is-new {
+  border: 1.5px dashed var(--blue);
+}
+
+.mini-step {
+  display: grid;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.mini-step b {
+  color: var(--ink);
+  font-size: 13px;
+}
+
+.mini-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--blue-50);
+  color: var(--blue);
+}
+
+.mini-body {
+  display: grid;
+  min-width: 0;
+}
+
+.mini-body b {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.mini-body span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mini-body .text-blue {
+  color: var(--blue);
+}
+
+.mini-arrow {
+  display: block;
+  margin: 4px 0 4px 74px;
+  color: var(--blue);
+}
+
+.issue-grid + .secure-note {
+  margin-top: 20px;
+}
+
+.spinner-sm {
+  width: 18px;
+  height: 18px;
+  border-width: 2px;
+  border-color: rgba(255, 255, 255, 0.4);
+  border-top-color: var(--white);
+}
+
+.ledger {
+  max-width: 1222px;
+  margin: 22px auto 0;
+  padding: 22px 24px 18px;
+}
+
+.ledger-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.ledger-head h2 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.ledger-empty {
+  padding: 20px 0;
+}
+
+.ledger-scroll {
+  overflow-x: auto;
+}
+
+.ledger table {
+  width: 100%;
+  min-width: 720px;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+  font-size: 15px;
+}
+
+.ledger th {
+  padding: 11px 14px;
+  background: var(--ice);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+}
+
+.ledger th:first-child {
+  border-radius: 8px 0 0 8px;
+}
+
+.ledger th:last-child {
+  border-radius: 0 8px 8px 0;
+}
+
+.ledger td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ledger tr.is-new td {
+  background: #f7faff;
+  border-top: 1.5px solid var(--blue);
+  border-bottom: 1.5px solid var(--blue);
+}
+
+.ledger tr.is-new td:first-child {
+  border-left: 1.5px solid var(--blue);
+  border-radius: 10px 0 0 10px;
+}
+
+.ledger tr.is-new td:last-child {
+  border-right: 1.5px solid var(--blue);
+  border-radius: 0 10px 10px 0;
+}
+
+.ledger .right {
+  text-align: right;
+}
+
+.ledger-new {
+  margin-left: 10px;
+}
+
+.ledger-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ledger-type svg {
+  color: var(--blue);
+}
+
+.ledger-dl {
+  color: var(--ink);
+  border-color: var(--line-2);
+  text-decoration: none;
+}
+
+.ledger-dl svg,
+.result-info-actions a.btn-primary svg {
+  color: inherit;
+}
+
+a.btn {
+  text-decoration: none;
+}
+
+.ledger + .result-actions,
+.ledger ~ .result-actions {
+  margin-top: 24px;
+}
+
 /* ===== 모달 ===== */
 .modal-backdrop {
   position: fixed;
@@ -2232,6 +2729,10 @@ b.is-green {
 }
 
 @media (max-width: 1100px) {
+  .issue-grid {
+    grid-template-columns: 1fr;
+  }
+
   .hero-inner {
     padding: 18px 24px 0;
   }
@@ -2271,6 +2772,18 @@ b.is-green {
 }
 
 @media (max-width: 760px) {
+  .picked {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card .action-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card {
+    padding: 20px 16px;
+  }
+
   .app-bg {
     padding: 0;
   }
@@ -2466,4 +2979,10 @@ b.is-green {
     padding-left: 26px;
     height: 34px;
   }
+}
+
+/* 결과 카드 오른쪽 버튼 줄의 주 버튼(배포본 다운로드)은 흰 글자 유지 */
+.result-info-actions .btn-primary {
+  color: var(--white);
+  border-color: transparent;
 }
