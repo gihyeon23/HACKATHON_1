@@ -5,11 +5,11 @@
                        이름·대장·파일 저장                    stateless, ID만 처리
 ```
 
-- frontend ↔ backend: `/api/*` (현재는 `dev/mock_backend.py`가 같은 계약으로 대체)
+- frontend ↔ backend: `/api/*`
 - backend ↔ engine: `/v1/*` (내부망 전용, 외부 노출 금지)
 - 비밀키(`WM_KEY`)는 엔진만 보유. 이름은 엔진으로 전달하지 않음
 - 모든 요청은 `multipart/form-data`, 응답은 JSON (camelCase)
-- 오류: HTTP 4xx/5xx + `{"error": "메시지"}`
+- 오류: HTTP 4xx/5xx + `{"error": "메시지"}` (백엔드는 구분이 필요한 오류에 `"code"`를 함께 준다)
 
 ---
 
@@ -76,35 +76,9 @@
 
 ## Backend (`/api`)
 
-### `POST /api/documents` — 수신자별 사본 발급
-| 필드 | 타입 | 필수 |
-|---|---|---|
-| `name` | string | O |
-| `image` | file | |
+프론트엔드가 쓰는 백엔드 API 명세는 [docs/API_SPEC.md](../docs/API_SPEC.md) 에 있다 (화면별 매핑, 요청·응답, 오류 코드, TypeScript 타입).
 
-백엔드: 고유 `recipientId` 발급 → `/v1/embed` 호출 → PNG 저장 → 대장 등록
-
-응답
-```json
-{"recipientId": 2624297755, "name": "홍길동", "psnr": 37.2, "ssim": 0.955, "elapsedMs": 2100.0,
- "strength": 4.0, "predictedZ": 6.6, "threshold": 5.0,
- "fileUrl": "/api/documents/2624297755/file"}
-```
-
-### `GET /api/documents/{recipientId}/file`
-PNG. `?download=1`이면 첨부 다운로드
-
-### `POST /api/detections` — 유출자 검출
-| 필드 | 타입 | 필수 |
-|---|---|---|
-| `photo` | file | O |
-| `corners` | string | |
-
-백엔드: 대장에서 후보 목록 구성 + 문서별 배포본 1장을 `reference`로 첨부 → `/v1/detect` 호출 → ID를 이름으로 변환
-
-응답: `/v1/detect` 응답 + `name`, `ranking[].name` (ID 대신 이름)
-
-### `GET /api/recipients`
-```json
-[{"recipientId": 2624297755, "name": "홍길동", "width": 1024, "height": 768, "createdAt": "2026-10-31 00:10:00"}]
-```
+백엔드 → 엔진 호출 요약
+- 사본 발급: 고유 32bit `recipientId` 발급 → `/v1/embed`(원본 문서 이미지) → 배포본 PNG 저장 → 대장 등록
+- 분석: 대장 전체를 `candidates`로, 문서별 최신 배포본 1장(최대 10장)을 `reference`로 첨부해 `/v1/detect` 호출
+- 엔진 응답의 `imagePng`, `restoredJpeg`(base64)는 로그에 남기지 않는다
