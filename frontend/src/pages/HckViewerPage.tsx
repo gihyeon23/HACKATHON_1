@@ -23,6 +23,16 @@ interface WritableFileHandle {
 type FilePickerWindow = Window & {
   showOpenFilePicker?: (options: unknown) => Promise<WritableFileHandle[]>;
 };
+// 크롬은 끌어다 놓은 파일의 핸들도 준다 → 끌어다 놓아도 원래 파일에 덮어쓸 수 있다
+type HandleItem = DataTransferItem & { getAsFileSystemHandle?: () => Promise<{ kind: string } | null> };
+
+/** 다음 사람에게 보낼 파일 상태. 원래 파일에 덮어썼거나, 새 파일을 받아야 한다 */
+type Forward = { kind: "overwritten"; fileName: string; blob: Blob } | { kind: "download"; fileName: string; blob: Blob };
+
+/** 파일 이름에 쓸 수 없는 문자 제거 */
+function safeName(value: string) {
+  return value.replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, " ").trim() || "문서";
+}
 
 /** 기기 식별값과 마지막 입력 이름. 저장소가 막혀 있어도 화면은 동작해야 한다 */
 function loadIdentity(): Identity {
@@ -83,7 +93,7 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [opened, setOpened] = useState<HckOpened | null>(null);
-  const [saveNote, setSaveNote] = useState<string | null>(null);
+  const [forward, setForward] = useState<Forward | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -121,7 +131,16 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
     e.preventDefault();
     setDragOver(false);
     const dropped = e.dataTransfer.files[0];
-    if (dropped) pick(dropped, dropped.name);
+    if (!dropped) return;
+    // 핸들은 이벤트 안에서 바로 요청해야 한다 (await 뒤에는 dataTransfer 가 비워짐)
+    const handlePromise = (e.dataTransfer.items[0] as HandleItem | undefined)?.getAsFileSystemHandle?.();
+    if (!handlePromise) {
+      pick(dropped, dropped.name);
+      return;
+    }
+    handlePromise
+      .then((handle) => pick(dropped, dropped.name, handle?.kind === "file" ? (handle as unknown as WritableFileHandle) : undefined))
+      .catch(() => pick(dropped, dropped.name));
   }
 
   async function submit(e: FormEvent) {
@@ -146,7 +165,7 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
       const result = await api.openHck(file.blob, next, ctrl.signal);
       setImageFailed(false);
       setOpened(result);
-      setSaveNote(await saveUpdated(result));
+      setForward(await saveUpdated(result));
     } catch (err) {
       if (!isAbortError(err)) setError(errorMessage(err));
     } finally {
@@ -154,8 +173,11 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
     }
   }
 
-  /** 장부가 바뀌었으면 같은 파일에 덮어쓰고, 안 되면 새 파일로 내려받게 한다 */
-  async function saveUpdated(result: HckOpened): Promise<string | null> {
+  /**
+   * 장부가 바뀌었으면 원래 파일에 덮어쓴다. 덮어쓰지 못하면 자동으로 내려받지 않고
+   * "보낼 파일 받기" 버튼을 크게 보여준다 — 받은 원래 파일을 다시 보내면 이 사람의 기록이 빠지기 때문.
+   */
+  async function saveUpdated(result: HckOpened): Promise<Forward | null> {
     if (!file) return null;
     const updated = base64ToBlob(result.hckBase64);
     if (await sameBytes(updated, file.blob)) return null;
@@ -164,19 +186,18 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
         const writable = await file.handle.createWritable();
         await writable.write(updated);
         await writable.close();
-        return `열람 기록을 ${file.name} 에 저장했습니다. 다른 사람에게 전달할 때는 이 파일을 보내세요.`;
+        return { kind: "overwritten", fileName: file.name, blob: updated };
       } catch {
         // 덮어쓰기 권한을 거절하면 내려받기로 넘어간다
       }
     }
-    downloadBlob(updated, file.name);
-    return `열람 기록이 담긴 ${file.name} 을 새로 내려받았습니다. 다른 사람에게 전달할 때는 새 파일을 보내세요.`;
+    return { kind: "download", fileName: `${safeName(result.title)}_${safeName(result.name)}.hck`, blob: updated };
   }
 
   function reset() {
     setOpened(null);
     setFile(null);
-    setSaveNote(null);
+    setForward(null);
     setError(null);
   }
 
@@ -194,11 +215,33 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
           </p>
         </div>
 
-        {saveNote && (
-          <p className="banner banner-info" role="status">
-            <Icon name="info" size={18} />
-            {saveNote}
-          </p>
+        {forward && (
+          <section className={`card forward-card${forward.kind === "download" ? " is-action" : ""}`} aria-label="다른 사람에게 보낼 파일">
+            <span className="forward-icon" aria-hidden="true">
+              <Icon name={forward.kind === "download" ? "download" : "check"} size={22} strokeWidth={2.2} />
+            </span>
+            <div className="forward-body">
+              {forward.kind === "overwritten" ? (
+                <>
+                  <strong>내 열람 기록을 {forward.fileName} 에 저장했습니다.</strong>
+                  <p>다른 사람에게 넘길 때는 이 파일을 그대로 보내세요.</p>
+                </>
+              ) : (
+                <>
+                  <strong>다른 사람에게 넘길 때는 아래 파일을 보내세요.</strong>
+                  <p>받은 원래 파일을 다시 보내면 내 열람 기록이 빠져서, 그다음 사람이 나를 거치지 않은 것으로 기록됩니다.</p>
+                </>
+              )}
+            </div>
+            <button
+              type="button"
+              className={`btn ${forward.kind === "download" ? "btn-primary" : "btn-outline"}`}
+              onClick={() => downloadBlob(forward.blob, forward.kind === "download" ? forward.fileName : `${safeName(opened.title)}_${safeName(opened.name)}.hck`)}
+            >
+              <Icon name="download" size={18} />
+              {forward.kind === "download" ? `보낼 파일 받기 (${forward.fileName})` : "보낼 파일 따로 받기"}
+            </button>
+          </section>
         )}
 
         <section className="card viewer-doc" aria-label="문서 내용">
@@ -295,7 +338,9 @@ export function HckViewerPage({ onHome }: HckViewerPageProps) {
                   <h2>{file.name}</h2>
                 </div>
                 <p className="file-confirm-sub">
-                  {file.handle ? "열면 이 파일에 열람 기록을 바로 저장합니다." : "열면 열람 기록이 담긴 새 파일을 내려받습니다."}
+                  {file.handle
+                    ? "열면 이 파일에 열람 기록을 바로 저장합니다. 다른 사람에게는 이 파일을 보내면 됩니다."
+                    : "열고 나면 다른 사람에게 보낼 파일을 따로 받아야 합니다. (크롬 · 엣지에서 '보호 파일 선택'으로 열면 이 파일에 바로 저장됩니다)"}
                 </p>
               </div>
               <button type="button" className="icon-btn picked-close" aria-label="선택한 파일 지우기" onClick={() => setFile(null)} disabled={busy}>
