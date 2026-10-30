@@ -6,6 +6,8 @@ export type * from "./types";
 /** .env 의 VITE_API_BASE_URL (예: http://localhost:8080) · 비우면 같은 주소의 /api (vite 프록시) */
 const BASE = (import.meta.env.VITE_API_BASE_URL ?? "").replace(/\/$/, "");
 
+const NO_SERVER = "분석 서버에 연결할 수 없습니다. 백엔드가 켜져 있는지, .env 의 VITE_API_BASE_URL 이 맞는지 확인해 주세요.";
+
 export class ApiError extends Error {
   constructor(public status: number, message: string, public code?: string) {
     super(message);
@@ -17,11 +19,13 @@ async function request(url: string, init?: RequestInit): Promise<Response> {
   try {
     res = await fetch(BASE + url, init);
   } catch {
-    throw new ApiError(0, "서버에 연결할 수 없습니다. 백엔드가 켜져 있는지 확인해 주세요.");
+    throw new ApiError(0, NO_SERVER);
   }
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new ApiError(res.status, body?.error ?? "요청을 처리하지 못했습니다.", body?.code);
+    // 백엔드 오류는 항상 { error, code? } JSON 이다. 아니면 요청이 백엔드까지 가지 못한 것
+    if (typeof body?.error !== "string") throw new ApiError(res.status, NO_SERVER);
+    throw new ApiError(res.status, body.error, body.code);
   }
   return res;
 }
