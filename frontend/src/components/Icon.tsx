@@ -102,6 +102,7 @@ const PATHS = {
       <path d="M12 11v5M12 8h.01" />
     </>
   ),
+  exclamation: <path d="M12 5v9M12 18.5v.5" />,
   alert: (
     <>
       <circle cx="12" cy="12" r="9" />

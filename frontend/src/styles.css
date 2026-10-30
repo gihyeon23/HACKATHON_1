@@ -1608,6 +1608,11 @@ b.is-green {
   color: var(--white);
 }
 
+.result-hero-icon.is-alert {
+  background: var(--red);
+  box-shadow: 0 0 0 8px var(--red-50);
+}
+
 .result-hero h1 {
   font-size: 40px;
   font-weight: 800;
