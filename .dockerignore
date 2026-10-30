@@ -1,0 +1,10 @@
+.git
+.gradle
+build/
+.idea
+*.iml
+out/
+HELP.md
+
+# 비밀번호가 들어갈 수 있는 로컬 환경변수 파일. 이미지에 포함되면 안 됨.
+.env
